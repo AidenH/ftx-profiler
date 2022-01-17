@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 
@@ -70,7 +71,7 @@ func SocketInit(state ProfileState) error {
 
 }
 
-func handleTradeReplies(t TradesResponse, msg string, state ProfileState) {
+func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error {
 	//function here to handle replies based on "type" field
 	json.Unmarshal([]byte(msg), &t)
 
@@ -87,33 +88,33 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) {
 
 		for _, v := range t.Data {
 
-			v.Price = Round(v.Price, 3)
+			p := Round(v.Price, state.PricePrecision)
+			c := fmt.Sprintf("%.1f", v.Size)
 
 			// if side buy, print green
 			if v.Side == "buy" {
 				if !state.Aggregate {
-					PrintTape(state.Gui, fmt.Sprintf("%s %s %f %f %s",
-						"\033[32m", v.Time, v.Price, v.Size, "\033[0m"))
+					PrintTape(state.Gui, "buy", p, c)
 
-					//fmt.Println("\033[32m", v.Time, v.Price, v.Size, "\033[0m")
 				} else {
 					cumulSize += v.Size
 					cumulSide = "buy"
 					cumulPrice = v.Price
 				}
 
-			} else {
+			} else if v.Side == "sell" {
 				// if side sell, print red
 				if !state.Aggregate {
-					PrintTape(state.Gui, fmt.Sprintf("%s %s %f %f %s",
-						"\033[31m", v.Time, v.Price, v.Size, "\033[0m"))
+					PrintTape(state.Gui, "sell", p, c)
 
-					//fmt.Println("\033[31m", v.Time, v.Price, v.Size, "\033[0m")
 				} else {
 					cumulSize += v.Size
 					cumulSide = "sell"
 					cumulPrice = v.Price
 				}
+			} else {
+				err := errors.New("handleTradeReplies - invalid side type")
+				return err
 			}
 		}
 
@@ -125,34 +126,32 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) {
 			c := fmt.Sprintf("%.1f", cumulSize)
 
 			if cumulSide == "buy" {
-				PrintTape(state.Gui, fmt.Sprintf("%s %g - %s %s",
-					"\033[32m", p, c, "\033[0m"))
-				//fmt.Println("\033[32m", cumuPrice, c, "\033[0m")
+				PrintTape(state.Gui, "buy", p, c)
+
 			} else if cumulSide == "sell" {
-				PrintTape(state.Gui, fmt.Sprintf("%s %g - %s %s",
-					"\033[31m", p, c, "\033[0m"))
-				//fmt.Println("\033[31m", cumuPrice, c, "\033[0m")
+				PrintTape(state.Gui, "sell", p, c)
+
 			}
 		}
 
 	} else if len(t.Data) != 0 {
 
 		p := Round(t.Data[0].Price, 3)
+		c := fmt.Sprintf("%.1f", t.Data[0].Size)
 
 		if t.Data[0].Side == "buy" {
-			PrintTape(state.Gui, fmt.Sprintf("%s %g - %.1f %s", "\033[31m",
-				p, t.Data[0].Size, "\033[0m"))
+			PrintTape(state.Gui, "buy", p, c)
 
-			//fmt.Println("\033[32m", t.Data[0].Price, t.Data[0].Size, "\033[0m")
+		} else if t.Data[0].Side == "sell" {
+			PrintTape(state.Gui, "sell", p, c)
 
 		} else {
-			PrintTape(state.Gui, fmt.Sprintf("%s %g - %.1f %s", "\033[31m",
-				p, t.Data[0].Size, "\033[0m"))
-
-			//fmt.Println("\033[31m", t.Data[0].Price, t.Data[0].Size, "\033[0m")
-
+			err := errors.New("handleTradeReplies 1 item Data - invalid side type")
+			return err
 		}
 	}
+
+	return nil
 
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -69,14 +70,23 @@ func layout(g *gocui.Gui) error {
 	return nil
 }
 
-func PrintTape(g *gocui.Gui, s string) error {
+func PrintTape(g *gocui.Gui, side string, price float64, size string) error {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("tape")
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintln(v, s)
+		if side == "buy" {
+			fmt.Fprintln(v, fmt.Sprintf("%s %g - %s %s",
+				"\033[32m", price, size, "\033[0m"))
+		} else if side == "sell" {
+			fmt.Fprintln(v, fmt.Sprintf("%s %g - %s %s",
+				"\033[31m", price, size, "\033[0m"))
+		} else {
+			err = errors.New("PrintTape - invalid side type")
+			return err
+		}
 
 		return nil
 	})
