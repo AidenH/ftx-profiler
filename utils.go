@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-func Round(input float64, precision float64) float64 {
+func Round(input float64, precision int) float64 {
 
 	var p int
 
 	if precision == 0 {
 		p = 1
 	} else {
-		s := []string{"1", strings.Repeat("0", int(precision))}
+		s := []string{"1", strings.Repeat("0", precision)}
 		p, _ = strconv.Atoi(strings.Join(s, ""))
 	}
 

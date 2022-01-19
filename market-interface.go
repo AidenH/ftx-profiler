@@ -57,6 +57,7 @@ func SocketInit(state ProfileState) error {
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 		handleTradeReplies(t, msg, state)
+		PrintProfile(state.Gui)
 	}
 
 	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
@@ -72,6 +73,8 @@ func SocketInit(state ProfileState) error {
 }
 
 func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error {
+	prec := state.PricePrecision
+
 	//function here to handle replies based on "type" field
 	json.Unmarshal([]byte(msg), &t)
 
@@ -91,10 +94,12 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error 
 			p := Round(v.Price, state.PricePrecision)
 			c := fmt.Sprintf("%.1f", v.Size)
 
+			VData[p] += v.Size
+
 			// if side buy, print green
 			if v.Side == "buy" {
 				if !state.Aggregate {
-					PrintTape(state.Gui, "buy", p, c)
+					PrintTape(state.Gui, "buy", p, c, prec)
 
 				} else {
 					cumulSize += v.Size
@@ -105,7 +110,7 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error 
 			} else if v.Side == "sell" {
 				// if side sell, print red
 				if !state.Aggregate {
-					PrintTape(state.Gui, "sell", p, c)
+					PrintTape(state.Gui, "sell", p, c, prec)
 
 				} else {
 					cumulSize += v.Size
@@ -126,10 +131,10 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error 
 			c := fmt.Sprintf("%.1f", cumulSize)
 
 			if cumulSide == "buy" {
-				PrintTape(state.Gui, "buy", p, c)
+				PrintTape(state.Gui, "buy", p, c, prec)
 
 			} else if cumulSide == "sell" {
-				PrintTape(state.Gui, "sell", p, c)
+				PrintTape(state.Gui, "sell", p, c, prec)
 
 			}
 		}
@@ -140,10 +145,10 @@ func handleTradeReplies(t TradesResponse, msg string, state ProfileState) error 
 		c := fmt.Sprintf("%.1f", t.Data[0].Size)
 
 		if t.Data[0].Side == "buy" {
-			PrintTape(state.Gui, "buy", p, c)
+			PrintTape(state.Gui, "buy", p, c, prec)
 
 		} else if t.Data[0].Side == "sell" {
-			PrintTape(state.Gui, "sell", p, c)
+			PrintTape(state.Gui, "sell", p, c, prec)
 
 		} else {
 			err := errors.New("handleTradeReplies 1 item Data - invalid side type")

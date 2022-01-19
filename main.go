@@ -7,17 +7,19 @@ import (
 type ProfileState struct {
 	Market          string
 	SizeGranularity float64
-	PricePrecision  float64
+	PricePrecision  int
 	Aggregate       bool
 	Gui             *gocui.Gui
 }
+
+var VData = make(map[float64]float64)
 
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
 func initProfile(
 	mar string,
 	gran float64,
-	price float64,
+	price int,
 	agg bool,
 	g *gocui.Gui) error {
 

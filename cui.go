@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/jroimartin/gocui"
 )
@@ -55,6 +57,8 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 
+		v.Wrap = true
+
 		fmt.Fprintln(v, "profile")
 	}
 
@@ -70,19 +74,40 @@ func layout(g *gocui.Gui) error {
 	return nil
 }
 
-func PrintTape(g *gocui.Gui, side string, price float64, size string) error {
+func PrintProfile(g *gocui.Gui) error {
+	g.Update(func(g *gocui.Gui) error {
+		v, err := g.View("profile")
+		if err != nil {
+			return err
+		}
+
+		v.Clear()
+		fmt.Fprintln(v, VData)
+
+		return nil
+	})
+
+	return nil
+}
+
+func PrintTape(g *gocui.Gui, side string, price float64, size string, prec int) error {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("tape")
 		if err != nil {
 			return err
 		}
 
+		dt := time.Now()
+		fmt.Fprint(v, dt.Format(time.StampMicro)[7:19])
+
+		p := strconv.FormatFloat(price, 'f', prec, 64)
+
 		if side == "buy" {
-			fmt.Fprintln(v, fmt.Sprintf("%s %g - %s %s",
-				"\033[32m", price, size, "\033[0m"))
+			fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
+				"\033[33m", p, size, "\033[0m"))
 		} else if side == "sell" {
-			fmt.Fprintln(v, fmt.Sprintf("%s %g - %s %s",
-				"\033[31m", price, size, "\033[0m"))
+			fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
+				"\033[32m", p, size, "\033[0m"))
 		} else {
 			err = errors.New("PrintTape - invalid side type")
 			return err
