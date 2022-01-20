@@ -14,6 +14,8 @@ type ProfileState struct {
 
 var VData = make(map[float64]float64)
 
+var State = ProfileState{}
+
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
 func initProfile(
@@ -23,7 +25,7 @@ func initProfile(
 	agg bool,
 	g *gocui.Gui) error {
 
-	State := ProfileState{
+	State = ProfileState{
 		Market:          mar,
 		SizeGranularity: gran,
 		PricePrecision:  price,
@@ -31,9 +33,9 @@ func initProfile(
 		Gui:             g,
 	}
 
-	err := SocketInit(State)
+	err := SocketInit()
 
-	setStatus(State)
+	setStatus()
 
 	return err
 }

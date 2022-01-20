@@ -74,8 +74,8 @@ func layout(g *gocui.Gui) error {
 	return nil
 }
 
-func PrintProfile(g *gocui.Gui) error {
-	g.Update(func(g *gocui.Gui) error {
+func PrintProfile() error {
+	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("profile")
 		if err != nil {
 			return err
@@ -90,8 +90,8 @@ func PrintProfile(g *gocui.Gui) error {
 	return nil
 }
 
-func PrintTape(g *gocui.Gui, side string, price float64, size string, prec int) error {
-	g.Update(func(g *gocui.Gui) error {
+func PrintTape(side string, price float64, size string) error {
+	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("tape")
 		if err != nil {
 			return err
@@ -100,7 +100,7 @@ func PrintTape(g *gocui.Gui, side string, price float64, size string, prec int) 
 		dt := time.Now()
 		fmt.Fprint(v, dt.Format(time.StampMicro)[7:19])
 
-		p := strconv.FormatFloat(price, 'f', prec, 64)
+		p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
 
 		if side == "buy" {
 			fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
@@ -119,8 +119,8 @@ func PrintTape(g *gocui.Gui, side string, price float64, size string, prec int) 
 	return nil
 }
 
-func setStatus(state ProfileState) error {
-	state.Gui.Update(func(g *gocui.Gui) error {
+func setStatus() error {
+	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("status")
 		if err != nil {
 			return err
@@ -128,7 +128,7 @@ func setStatus(state ProfileState) error {
 
 		v.Clear()
 
-		fmt.Fprintln(v, state.Market)
+		fmt.Fprintln(v, State.Market)
 
 		return nil
 	})
