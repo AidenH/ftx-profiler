@@ -119,7 +119,8 @@ func PrintTape(side string, price float64, size string) error {
 	return nil
 }
 
-func setStatus() error {
+// SetStatus updates the status bar with relevant market information
+func SetStatus() error {
 	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("status")
 		if err != nil {
@@ -129,6 +130,22 @@ func setStatus() error {
 		v.Clear()
 
 		fmt.Fprintln(v, State.Market)
+
+		return nil
+	})
+
+	return nil
+}
+
+// GuiDebugPrint prints debug strings to the selected Gui View
+func GuiDebugPrint(v string, msg string) error {
+	State.Gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View(v)
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprint(v, msg)
 
 		return nil
 	})

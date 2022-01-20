@@ -35,7 +35,7 @@ func initProfile(
 
 	err := SocketInit()
 
-	setStatus()
+	SetStatus()
 
 	return err
 }
