@@ -15,6 +15,7 @@ type CuiState struct {
 	SetMiddle bool
 }
 
+// InitCui initialize gocui cui
 func InitCui() *gocui.Gui {
 
 	CState = CuiState{
@@ -86,6 +87,7 @@ func layout(g *gocui.Gui) error {
 	return nil
 }
 
+// PrintProfile writes volume profile data to its view
 func PrintProfile() error {
 	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("profile")
@@ -102,6 +104,7 @@ func PrintProfile() error {
 	return nil
 }
 
+// PrintTape outputs formulated trade event strings to the tape view
 func PrintTape(side string, price float64, size string) error {
 	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("tape")
