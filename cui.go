@@ -10,7 +10,18 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+type CuiState struct {
+	Middle    float64
+	SetMiddle bool
+}
+
 func InitCui() *gocui.Gui {
+
+	CState = CuiState{
+		Middle:    0,
+		SetMiddle: true,
+	}
+
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
@@ -59,7 +70,8 @@ func layout(g *gocui.Gui) error {
 
 		v.Wrap = true
 
-		fmt.Fprintln(v, "profile")
+		fmt.Fprintln(v, "init profile")
+
 	}
 
 	// TAPE
@@ -129,7 +141,9 @@ func SetStatus() error {
 
 		v.Clear()
 
-		fmt.Fprintln(v, State.Market)
+		p := strconv.FormatFloat(State.LastPrice, 'f', State.PricePrecision, 64)
+
+		fmt.Fprintf(v, "%s - %s", State.Market, p)
 
 		return nil
 	})

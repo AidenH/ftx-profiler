@@ -6,6 +6,7 @@ import (
 
 type ProfileState struct {
 	Market          string
+	LastPrice       float64
 	SizeGranularity float64
 	PricePrecision  int
 	Aggregate       bool
@@ -15,6 +16,7 @@ type ProfileState struct {
 var VData = make(map[float64]float64)
 
 var State = ProfileState{}
+var CState = CuiState{}
 
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
@@ -34,8 +36,6 @@ func initProfile(
 	}
 
 	err := SocketInit()
-
-	SetStatus()
 
 	return err
 }

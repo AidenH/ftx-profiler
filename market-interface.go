@@ -58,6 +58,7 @@ func SocketInit() error {
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 		handleTradeReplies(t, msg)
 		PrintProfile()
+		SetStatus()
 	}
 
 	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
@@ -74,7 +75,12 @@ func SocketInit() error {
 
 func handleTradeReplies(t TradesResponse, msg string) error {
 
-	//function here to handle replies based on "type" field
+	if CState.SetMiddle && State.LastPrice != 0 {
+		CState.Middle = State.LastPrice
+		CState.SetMiddle = false
+	}
+
+	// function here to handle replies based on "type" field
 	json.Unmarshal([]byte(msg), &t)
 
 	// if more than one Data element, iterate through items
@@ -142,6 +148,11 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 		p := Round(t.Data[0].Price, State.PricePrecision)
 		c := fmt.Sprintf("%.1f", t.Data[0].Size)
+
+		VData[p] += t.Data[0].Size
+
+		// set global last price
+		State.LastPrice = p
 
 		if t.Data[0].Side == "buy" {
 			PrintTape("buy", p, c)
