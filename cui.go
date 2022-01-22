@@ -95,8 +95,13 @@ func PrintProfile() error {
 			return err
 		}
 
+		_, maxY := v.Size()
+
+		modPrice := State.LastPrice * float64(PrecisionMap[State.PricePrecision])
+		ladderStart := (modPrice - float64(maxY/2)) / float64(PrecisionMap[State.PricePrecision])
+
 		v.Clear()
-		fmt.Fprintln(v, VData)
+		fmt.Fprintln(v, ladderStart, State.LastPrice)
 
 		return nil
 	})

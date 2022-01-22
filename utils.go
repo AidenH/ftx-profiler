@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+var PrecisionMap = map[int]int{
+	1: 10,
+	2: 100,
+	3: 1000,
+	4: 10000,
+	5: 100000,
+	6: 1000000,
+}
+
 func Round(input float64, precision int) float64 {
 
 	var p int
