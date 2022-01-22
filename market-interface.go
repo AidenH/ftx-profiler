@@ -75,9 +75,16 @@ func SocketInit() error {
 
 func handleTradeReplies(t TradesResponse, msg string) error {
 
+	// if SetMiddle is armed and last price is not init-0, add new last price
+	//  middle-of-profile price
 	if CState.SetMiddle && State.LastPrice != 0 {
 		CState.Middle = State.LastPrice
 		CState.SetMiddle = false
+	}
+
+	// upon setting middle-of-profile price, reprint profile on new trade event
+	if !CState.SetMiddle {
+		PrintProfile()
 	}
 
 	// function here to handle replies based on "type" field
