@@ -106,7 +106,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 			p := Round(v.Price, State.PricePrecision)
 			c := fmt.Sprintf("%.1f", v.Size)
 
-			VData[p] += v.Size
+			VData[p] += Round(v.Size, int(State.SizeGranularity))
 
 			// if side buy, print green
 			if v.Side == "buy" {
@@ -156,7 +156,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		p := Round(t.Data[0].Price, State.PricePrecision)
 		c := fmt.Sprintf("%.1f", t.Data[0].Size)
 
-		VData[p] += t.Data[0].Size
+		VData[p] += Round(t.Data[0].Size, int(State.SizeGranularity))
 
 		// set global last price
 		State.LastPrice = p
