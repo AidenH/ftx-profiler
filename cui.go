@@ -35,7 +35,7 @@ func InitCui() *gocui.Gui {
 		log.Panicln(err)
 	}
 
-	initProfile("NEAR-PERP", 0, 3, true, g)
+	initProfile("NEAR-PERP", 0, 2, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
@@ -96,22 +96,21 @@ func PrintProfile() error {
 		}
 
 		_, maxY := v.Size()
-		prec := float64(PrecisionMap[State.PricePrecision])
+		fMaxY := float64(maxY)
 
+		prec := float64(PrecisionMap[State.PricePrecision])
 		modPrice := State.LastPrice * prec
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
 		//fmt.Fprintln(v, ladderStart, State.LastPrice)
-		for i := 0; i < maxY; i++ {
+		//for i := 0.0; i < fMaxY; i++ {
+		for i := fMaxY; i > 0.0; i-- {
+			current := ladderStart + (i / prec)
 
-			p := strconv.FormatFloat(
-				ladderStart+(float64(i)/prec),
-				'f',
-				State.PricePrecision,
-				64)
-
-			fmt.Fprintln(v, p, " - ", VData[ladderStart+(float64(i)/prec)])
+			p := strconv.FormatFloat(current, 'f', State.PricePrecision, 64)
+			//fmt.Fprintln(v, p)
+			fmt.Fprintln(v, p, " - ", VData[current])
 		}
 
 		return nil
