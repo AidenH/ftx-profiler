@@ -103,14 +103,22 @@ func PrintProfile() error {
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
-		//fmt.Fprintln(v, ladderStart, State.LastPrice)
+
+		// DEBUG output VData
+		//fmt.Fprintln(v, VData)
+
 		//for i := 0.0; i < fMaxY; i++ {
 		for i := fMaxY; i > 0.0; i-- {
 			current := ladderStart + (i / prec)
 
 			p := strconv.FormatFloat(current, 'f', State.PricePrecision, 64)
-			//fmt.Fprintln(v, p)
-			fmt.Fprintln(v, p, " - ", VData[current])
+
+			if current == State.LastPrice {
+				fmt.Fprintln(v, "\033[35m", p, "\033[0m - ", VData[current])
+			} else {
+				fmt.Fprintln(v, p, " - ", VData[current])
+			}
+
 		}
 
 		return nil
