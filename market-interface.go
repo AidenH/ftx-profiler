@@ -57,7 +57,7 @@ func SocketInit() error {
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 		handleTradeReplies(t, msg)
-		PrintProfile()
+		go PrintProfile()
 		SetStatus()
 	}
 
