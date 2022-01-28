@@ -177,22 +177,6 @@ func SetStatus() error {
 	return nil
 }
 
-// GuiDebugPrint prints debug strings to the selected Gui View
-func GuiDebugPrint(v string, msg string) error {
-	State.Gui.Update(func(g *gocui.Gui) error {
-		v, err := g.View(v)
-		if err != nil {
-			return err
-		}
-
-		fmt.Fprint(v, msg)
-
-		return nil
-	})
-
-	return nil
-}
-
 func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }

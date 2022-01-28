@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"strings"
+
+	"github.com/jroimartin/gocui"
 )
 
 var PrecisionMap = map[int]int{
@@ -14,6 +18,8 @@ var PrecisionMap = map[int]int{
 	5: 100000,
 	6: 1000000,
 }
+
+var OutFile, err = os.Create("/home/lurkcs/profile-output")
 
 func Round(input float64, precision int) float64 {
 
@@ -31,4 +37,28 @@ func Round(input float64, precision int) float64 {
 	result := math.Round(input*pfloat) / pfloat
 
 	return result
+}
+
+// GuiDebugPrint prints debug strings to the selected Gui View
+func GuiDebugPrint(v string, msg interface{}) error {
+
+	State.Gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View(v)
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintln(v, msg)
+
+		return nil
+	})
+
+	return nil
+}
+
+func AddVData(price float64, size float64) error {
+
+	VData[price] += Round(size, int(State.SizeGranularity))
+
+	return nil
 }
