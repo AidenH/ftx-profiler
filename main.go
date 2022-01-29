@@ -14,6 +14,7 @@ type ProfileState struct {
 }
 
 var VData = make(map[float64]float64)
+var Ladder = make(map[float64]int)
 
 var State = ProfileState{}
 var CState = CuiState{}

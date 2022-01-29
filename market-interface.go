@@ -56,7 +56,7 @@ func SocketInit() error {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		handleTradeReplies(t, msg)
+		go handleTradeReplies(t, msg)
 		go PrintProfile()
 		SetStatus()
 	}
@@ -82,10 +82,9 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		CState.SetMiddle = false
 	}
 
-	// upon setting middle-of-profile price, reprint profile on new trade event
-	if !CState.SetMiddle {
+	/*if !CState.SetMiddle {
 		PrintProfile()
-	}
+	}*/
 
 	// function here to handle replies based on "type" field
 	json.Unmarshal([]byte(msg), &t)
@@ -149,6 +148,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 				PrintTape("sell", p, c)
 
 			}
+
 		}
 
 	} else if len(t.Data) != 0 {
@@ -172,6 +172,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 			err := errors.New("handleTradeReplies 1 item Data - invalid side type")
 			return err
 		}
+
 	}
 
 	return nil

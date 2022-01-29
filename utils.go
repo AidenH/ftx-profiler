@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 
@@ -19,7 +18,7 @@ var PrecisionMap = map[int]int{
 	6: 1000000,
 }
 
-var OutFile, err = os.Create("/home/lurkcs/profile-output")
+var ProfileUnitDiv = 10
 
 func Round(input float64, precision int) float64 {
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jroimartin/gocui"
@@ -103,23 +104,51 @@ func PrintProfile() error {
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
+		//Ladder = make(map[float64]int)
 
-		// DEBUG output VData
-		//fmt.Fprintln(v, VData)
+		//GuiDebugPrint("tape", fmt.Sprint(current, " - ", VData))
 
-		//for i := 0.0; i < fMaxY; i++ {
 		for i := fMaxY; i > 0.0; i-- {
+			//fmt.Fprint(v, ladderStart, " - ")
+
 			current := ladderStart + (i / prec)
-
 			p := strconv.FormatFloat(current, 'f', State.PricePrecision, 64)
+			f, _ := strconv.ParseFloat(p, 64)
+			sizewidth := int(VData[f]) / ProfileUnitDiv
 
-			if current == State.LastPrice {
-				fmt.Fprintln(v, "\033[35m", p, "\033[0m - ", VData[current])
+			if f == State.LastPrice {
+
+				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat("#", sizewidth))
+
 			} else {
-				fmt.Fprintln(v, p, " - ", VData[current])
+
+				fmt.Fprintln(v, p, " - ", strings.Repeat("#", sizewidth))
+
 			}
 
+			if sizewidth >= 40 {
+				ProfileUnitDiv *= 2
+			}
 		}
+
+		return nil
+	})
+
+	return nil
+}
+
+func InsertProfile() error {
+	State.Gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View("profile")
+		if err != nil {
+			return err
+		}
+
+		_, maxY := v.Size()
+
+		v.SetOrigin(0, 3)
+
+		fmt.Fprint(v, State.LastPrice, " - ", Ladder[State.LastPrice], " - ", maxY)
 
 		return nil
 	})
