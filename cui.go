@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -36,9 +37,11 @@ func InitCui() *gocui.Gui {
 		log.Panicln(err)
 	}
 
-	initProfile("NEAR-PERP", 0, 2, true, g)
+	//initProfile("NEAR-PERP", 0, 2, true, g)
+	initProfile("FTM-PERP", 0, 3, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		os.WriteFile("/home/lurkcs/profile-output", []byte("MainLoop"), 0644)
 		log.Panicln(err)
 	}
 
@@ -58,6 +61,7 @@ func layout(g *gocui.Gui) error {
 	// STATUS BAR
 	if v, err := g.SetView("status", 0, 0, maxX-1, 3); err != nil {
 		if err != gocui.ErrUnknownView {
+			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - status"), 0644)
 			return err
 		}
 
@@ -67,6 +71,7 @@ func layout(g *gocui.Gui) error {
 	// PROFILE
 	if v, err := g.SetView("profile", 0, yOffset, (maxX/3*2)-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
+			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - profile"), 0644)
 			return err
 		}
 
@@ -79,6 +84,7 @@ func layout(g *gocui.Gui) error {
 	// TAPE
 	if v, err := g.SetView("tape", maxX/3*2, yOffset, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
+			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - tape"), 0644)
 			return err
 		}
 
@@ -88,15 +94,16 @@ func layout(g *gocui.Gui) error {
 	return nil
 }
 
-// PrintProfile writes volume profile data to its view
+// PrintProfile writes profile with volume data to the profile view
 func PrintProfile() error {
 	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("profile")
 		if err != nil {
+			os.WriteFile("/home/lurkcs/profile-output", []byte("PrintProfile"), 0644)
 			return err
 		}
 
-		_, maxY := v.Size()
+		maxX, maxY := v.Size()
 		fMaxY := float64(maxY)
 
 		prec := float64(PrecisionMap[State.PricePrecision])
@@ -106,33 +113,16 @@ func PrintProfile() error {
 		v.Clear()
 		//Ladder = make(map[float64]int)
 
-		//GuiDebugPrint("tape", fmt.Sprint(current, " - ", VData))
-
 		for i := fMaxY; i > 0.0; i-- {
-			//fmt.Fprint(v, ladderStart, " - ")
-
 			current := ladderStart + (i / prec)
 			p := strconv.FormatFloat(current, 'f', State.PricePrecision, 64)
 			f, _ := strconv.ParseFloat(p, 64)
 			sizewidth := int(VData[f]) / ProfileUnitDiv
 
-			if f == State.LastPrice {
-
-				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat("#", sizewidth))
-
-			} else {
-
-				fmt.Fprintln(v, p, " - ", strings.Repeat("#", sizewidth))
-
-			}
-
-			if sizewidth >= 40 {
+			// rescale profile proportions if vol length above half view width
+			if sizewidth >= maxX/2 {
 				ProfileUnitDiv *= 2
 			}
-		}
-
-		return nil
-	})
 
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
@@ -141,12 +131,6 @@ func PrintProfile() error {
 				fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
 			}
 		}
-
-		_, maxY := v.Size()
-
-		v.SetOrigin(0, 3)
-
-		fmt.Fprint(v, State.LastPrice, " - ", Ladder[State.LastPrice], " - ", maxY)
 
 		return nil
 	})
@@ -205,5 +189,6 @@ func SetStatus() error {
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
+	os.WriteFile("/home/lurkcs/profile-output", []byte("quit"), 0644)
 	return gocui.ErrQuit
 }
