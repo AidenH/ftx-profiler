@@ -7,7 +7,7 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-type ProfileState struct {
+type ProgramState struct {
 	Market          string
 	LastPrice       float64
 	OpenPrice       float64
@@ -15,13 +15,15 @@ type ProfileState struct {
 	PricePrecision  int
 	Aggregate       bool
 	Gui             *gocui.Gui
+	TapeTrue        bool
+	ProfileTrue     bool
 }
 
 var VData = make(map[float64]float64)
 var Ladder = make(map[float64]int)
 
 var Settings = ProgramSettings{}
-var State = ProfileState{}
+var State = ProgramState{}
 var CState = CuiState{}
 
 // initProfile initializes an FTX websocket to populate tape and profile
@@ -33,18 +35,22 @@ func initProfile(
 	agg bool,
 	g *gocui.Gui) error {
 
-	State = ProfileState{
+	State = ProgramState{
 		Market:          mar,
 		SizeGranularity: gran,
 		PricePrecision:  price,
 		Aggregate:       agg,
 		Gui:             g,
+		TapeTrue:        true,
+		ProfileTrue:     true,
 	}
 
 	Settings = ProgramSettings{
 		// Recommend '#' or '█'
 		VolumeSymbol: "█",
 	}
+
+	HandleOsArgs()
 
 	err := SocketInit()
 

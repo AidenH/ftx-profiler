@@ -60,13 +60,11 @@ func layout(g *gocui.Gui) error {
 	}
 
 	// STATUS BAR
-	if v, err := g.SetView("status", 0, 0, maxX-1, 3); err != nil {
+	if _, err := g.SetView("status", 0, 0, maxX-1, 3); err != nil {
 		if err != gocui.ErrUnknownView {
 			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - status"), 0644)
 			return err
 		}
-
-		fmt.Fprintln(v, "status bar")
 	}
 
 	// PROFILE
@@ -77,9 +75,6 @@ func layout(g *gocui.Gui) error {
 		}
 
 		v.Wrap = true
-
-		fmt.Fprintln(v, "init profile")
-
 	}
 
 	// TAPE
@@ -141,30 +136,32 @@ func PrintProfile() error {
 
 // PrintTape outputs formulated trade event strings to the tape view
 func PrintTape(side string, price float64, size string) error {
-	State.Gui.Update(func(g *gocui.Gui) error {
-		v, err := g.View("tape")
-		if err != nil {
-			return err
-		}
+	if State.TapeTrue {
+		State.Gui.Update(func(g *gocui.Gui) error {
+			v, err := g.View("tape")
+			if err != nil {
+				return err
+			}
 
-		dt := time.Now()
-		fmt.Fprint(v, dt.Format(time.StampMicro)[7:19])
+			dt := time.Now()
+			fmt.Fprint(v, dt.Format(time.StampMicro)[7:19])
 
-		p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
+			p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
 
-		if side == "buy" {
-			fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
-				"\033[32m", p, size, "\033[0m"))
-		} else if side == "sell" {
-			fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
-				"\033[31m", p, size, "\033[0m"))
-		} else {
-			err = errors.New("PrintTape - invalid side type")
-			return err
-		}
+			if side == "buy" {
+				fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
+					"\033[32m", p, size, "\033[0m"))
+			} else if side == "sell" {
+				fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
+					"\033[31m", p, size, "\033[0m"))
+			} else {
+				err = errors.New("PrintTape - invalid side type")
+				return err
+			}
 
-		return nil
-	})
+			return nil
+		})
+	}
 
 	return nil
 }
