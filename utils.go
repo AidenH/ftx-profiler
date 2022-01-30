@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"fmt"
+	"hash"
 	"math"
 	"os"
 	"strconv"
@@ -75,4 +78,15 @@ func AddVData(price float64, size float64) error {
 	VData[price] += out
 
 	return nil
+}
+
+func CreateSignature(msg string) (hash.Hash, error) {
+	//ts := time.Now().Unix()
+	secret := "test"
+	data := "test"
+
+	h := hmac.New(sha256.New, []byte(secret))
+	h.Write([]byte(data))
+
+	return nil, nil
 }
