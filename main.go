@@ -1,12 +1,16 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/jroimartin/gocui"
 )
 
 type ProfileState struct {
 	Market          string
 	LastPrice       float64
+	OpenPrice       float64
 	SizeGranularity float64
 	PricePrecision  int
 	Aggregate       bool

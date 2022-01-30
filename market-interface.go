@@ -157,6 +157,13 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 			}
 
+			// set session Open price if last price was init 0
+			if State.LastPrice == 0 {
+				State.OpenPrice = p
+			}
+
+			State.LastPrice = p
+
 		}
 
 	} else if len(t.Data) != 0 {
@@ -170,6 +177,11 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 		// add event data to VData var
 		AddVData(p, t.Data[0].Size)
+
+		// set session Open price if last price was init 0
+		if State.LastPrice == 0 {
+			State.OpenPrice = p
+		}
 
 		// set global last price
 		State.LastPrice = p
