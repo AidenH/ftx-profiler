@@ -16,6 +16,7 @@ type ProfileState struct {
 var VData = make(map[float64]float64)
 var Ladder = make(map[float64]int)
 
+var Settings = ProgramSettings{}
 var State = ProfileState{}
 var CState = CuiState{}
 
@@ -34,6 +35,11 @@ func initProfile(
 		PricePrecision:  price,
 		Aggregate:       agg,
 		Gui:             g,
+	}
+
+	Settings = ProgramSettings{
+		// Recommend '#' or '█'
+		VolumeSymbol: "█",
 	}
 
 	err := SocketInit()

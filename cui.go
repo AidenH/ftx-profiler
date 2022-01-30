@@ -134,14 +134,12 @@ func PrintProfile() error {
 		return nil
 	})
 
-	return nil
-}
-
-func InsertProfile() error {
-	State.Gui.Update(func(g *gocui.Gui) error {
-		v, err := g.View("profile")
-		if err != nil {
-			return err
+			// print profile. if i = current price, mark on ladder
+			if f == State.LastPrice {
+				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+			} else {
+				fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+			}
 		}
 
 		_, maxY := v.Size()

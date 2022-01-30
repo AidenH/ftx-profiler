@@ -9,6 +9,10 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+type ProgramSettings struct {
+	VolumeSymbol string
+}
+
 var PrecisionMap = map[int]int{
 	1: 10,
 	2: 100,
