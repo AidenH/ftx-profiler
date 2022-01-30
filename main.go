@@ -53,7 +53,11 @@ func initProfile(
 
 func main() {
 
-	_ = InitCui()
+	_, err := InitCui()
+	if err != nil {
+		s := fmt.Sprintf("%s", err)
+		os.WriteFile("/home/lurkcs/profile-output", []byte(s), 0644)
+	}
 
 	//socket := initProfile("NEAR-PERP", 1, 0, true, g)
 }
