@@ -102,7 +102,11 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 		for _, v := range t.Data {
 
-			p := Round(v.Price, State.PricePrecision)
+			p, err := Round(v.Price, State.PricePrecision)
+			if err != nil {
+				panic(err)
+			}
+
 			c := fmt.Sprintf("%.1f", v.Size)
 
 			// add event data to VData var
@@ -139,7 +143,11 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		// 	counting loop is complete
 		if State.Aggregate {
 
-			p := Round(cumulPrice, State.PricePrecision)
+			p, err := Round(cumulPrice, State.PricePrecision)
+			if err != nil {
+				panic(err)
+			}
+
 			c := fmt.Sprintf("%.1f", cumulSize)
 			if cumulSide == "buy" {
 				PrintTape("buy", p, c)
@@ -153,7 +161,11 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 	} else if len(t.Data) != 0 {
 
-		p := Round(t.Data[0].Price, State.PricePrecision)
+		p, err := Round(t.Data[0].Price, State.PricePrecision)
+		if err != nil {
+			panic(err)
+		}
+
 		c := fmt.Sprintf("%.1f", t.Data[0].Size)
 
 		// add event data to VData var

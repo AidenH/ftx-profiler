@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 
@@ -24,22 +25,27 @@ var PrecisionMap = map[int]int{
 
 var ProfileUnitDiv = 10
 
-func Round(input float64, precision int) float64 {
+func Round(input float64, precision int) (float64, error) {
 
 	var p int
+	var err error
 
 	if precision == 0 {
 		p = 1
 	} else {
 		s := []string{"1", strings.Repeat("0", precision)}
-		p, _ = strconv.Atoi(strings.Join(s, ""))
+		p, err = strconv.Atoi(strings.Join(s, ""))
+		if err != nil {
+			os.WriteFile("/home/lurkcs/profile-output", []byte("Round"), 0644)
+			return 0.0, err
+		}
 	}
 
 	pfloat := float64(p)
 
 	result := math.Round(input*pfloat) / pfloat
 
-	return result
+	return result, nil
 }
 
 // GuiDebugPrint prints debug strings to the selected Gui View
@@ -61,7 +67,12 @@ func GuiDebugPrint(v string, msg interface{}) error {
 
 func AddVData(price float64, size float64) error {
 
-	VData[price] += Round(size, int(State.SizeGranularity))
+	out, err := Round(size, int(State.SizeGranularity))
+	if err != nil {
+		return err
+	}
+
+	VData[price] += out
 
 	return nil
 }
