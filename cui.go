@@ -18,7 +18,7 @@ type CuiState struct {
 }
 
 // InitCui initialize gocui cui
-func InitCui() *gocui.Gui {
+func InitCui() (*gocui.Gui, error) {
 
 	CState = CuiState{
 		Middle:    0,
@@ -28,6 +28,7 @@ func InitCui() *gocui.Gui {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
+		return nil, err
 	}
 	defer g.Close()
 
@@ -42,10 +43,10 @@ func InitCui() *gocui.Gui {
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		os.WriteFile("/home/lurkcs/profile-output", []byte("MainLoop"), 0644)
-		log.Panicln(err)
+		return nil, err
 	}
 
-	return g
+	return g, err
 }
 
 func layout(g *gocui.Gui) error {
