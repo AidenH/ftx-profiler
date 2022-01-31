@@ -38,7 +38,6 @@ func InitCui() (*gocui.Gui, error) {
 		log.Panicln(err)
 	}
 
-	//initProfile("NEAR-PERP", 0, 2, true, g)
 	initProfile("FTM-PERP", 0, 3, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
