@@ -102,7 +102,7 @@ func PrintProfile() error {
 		fMaxY := float64(maxY)
 
 		prec := float64(PrecisionMap[State.PricePrecision])
-		modPrice := State.LastPrice * prec
+		modPrice := CState.Middle * prec
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
@@ -122,6 +122,11 @@ func PrintProfile() error {
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
 				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+
+				if i < 3 || i > (fMaxY-3) {
+					CState.SetMiddle = true
+				}
+
 			} else {
 				fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
 			}
