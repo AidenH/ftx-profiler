@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -38,10 +37,9 @@ func InitCui() (*gocui.Gui, error) {
 		log.Panicln(err)
 	}
 
-	initProfile("FTM-PERP", 0, 3, true, g)
+	initProfile("BTC-PERP", 0, 0, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
-		os.WriteFile("/home/lurkcs/profile-output", []byte("MainLoop"), 0644)
 		return nil, err
 	}
 
@@ -61,7 +59,6 @@ func layout(g *gocui.Gui) error {
 	// STATUS BAR
 	if _, err := g.SetView("status", 0, 0, maxX-1, 3); err != nil {
 		if err != gocui.ErrUnknownView {
-			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - status"), 0644)
 			return err
 		}
 	}
@@ -69,7 +66,6 @@ func layout(g *gocui.Gui) error {
 	// PROFILE
 	if v, err := g.SetView("profile", 0, yOffset, (maxX/3*2)-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
-			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - profile"), 0644)
 			return err
 		}
 
@@ -79,7 +75,6 @@ func layout(g *gocui.Gui) error {
 	// TAPE
 	if v, err := g.SetView("tape", maxX/3*2, yOffset, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
-			os.WriteFile("/home/lurkcs/profile-output", []byte("layout - tape"), 0644)
 			return err
 		}
 
@@ -94,7 +89,7 @@ func PrintProfile() error {
 	State.Gui.Update(func(g *gocui.Gui) error {
 		v, err := g.View("profile")
 		if err != nil {
-			os.WriteFile("/home/lurkcs/profile-output", []byte("PrintProfile"), 0644)
+			FileWrite("err getting PrintProfile view")
 			return err
 		}
 
@@ -115,7 +110,7 @@ func PrintProfile() error {
 			sizewidth := int(VData[f]) / ProfileUnitDiv
 
 			// rescale profile proportions if vol length above half view width
-			if sizewidth >= maxX/2 {
+			if sizewidth >= maxX/3 {
 				ProfileUnitDiv *= 2
 			}
 
@@ -153,13 +148,19 @@ func PrintTape(side string, price float64, size string) error {
 			p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
 
 			if side == "buy" {
-				fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
-					"\033[32m", p, size, "\033[0m"))
+				str := fmt.Sprintf("%s %s - %s %s", "\033[32m", p, size, "\033[0m")
+				fmt.Fprintln(v, str)
+
+				//FileWrite(str)
 			} else if side == "sell" {
-				fmt.Fprintln(v, fmt.Sprintf("%s %s - %s %s",
-					"\033[31m", p, size, "\033[0m"))
+				str := fmt.Sprintf("%s %s - %s %s", "\033[31m", p, size, "\033[0m")
+				fmt.Fprintln(v, str)
+
+				//FileWrite(str)
 			} else {
 				err = errors.New("PrintTape - invalid side type")
+
+				//FileWrite(side)
 				return err
 			}
 
@@ -192,6 +193,5 @@ func SetStatus() error {
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
-	os.WriteFile("/home/lurkcs/profile-output", []byte("quit"), 0644)
 	return gocui.ErrQuit
 }

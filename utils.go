@@ -29,6 +29,7 @@ var PrecisionMap = map[int]int{
 var ProfileUnitDiv = 10
 
 func Round(input float64, precision int) (float64, error) {
+	//FileWrite(fmt.Sprintf("Round\ninput:%f", input))
 
 	var p int
 	var err error
@@ -39,7 +40,6 @@ func Round(input float64, precision int) (float64, error) {
 		s := []string{"1", strings.Repeat("0", precision)}
 		p, err = strconv.Atoi(strings.Join(s, ""))
 		if err != nil {
-			os.WriteFile("/home/lurkcs/profile-output", []byte("Round"), 0644)
 			return 0.0, err
 		}
 	}
@@ -47,6 +47,8 @@ func Round(input float64, precision int) (float64, error) {
 	pfloat := float64(p)
 
 	result := math.Round(input*pfloat) / pfloat
+
+	//FileWrite(fmt.Sprintf("Rounded: %f\n", result))
 
 	return result, nil
 }
@@ -64,6 +66,15 @@ func GuiDebugPrint(v string, msg interface{}) error {
 
 		return nil
 	})
+
+	return nil
+}
+
+func FileWrite(dat string) error {
+	_, err := LogFile.Write([]byte(fmt.Sprint(dat, "\n")))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

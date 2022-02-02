@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/jroimartin/gocui"
@@ -25,6 +24,8 @@ var Ladder = make(map[float64]int)
 var Settings = ProgramSettings{}
 var State = ProgramState{}
 var CState = CuiState{}
+
+var LogFile, _ = os.Create("/home/lurkcs/profiler-output-log")
 
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
@@ -58,12 +59,11 @@ func initProfile(
 }
 
 func main() {
+	defer LogFile.Close()
 
-	_, err := InitCui()
-	if err != nil {
-		s := fmt.Sprintf("%s", err)
-		os.WriteFile("/home/lurkcs/profile-output", []byte(s), 0644)
-	}
+	InitCui()
+
+	LogFile.Sync()
 
 	//socket := initProfile("NEAR-PERP", 1, 0, true, g)
 }

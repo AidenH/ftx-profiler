@@ -48,7 +48,7 @@ func SocketInit() error {
 		subscribeRequest(socket)
 
 		//clear terminal
-		fmt.Println("\033[H\033[2J")
+		//fmt.Println("\033[H\033[2J")
 	}
 
 	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
@@ -106,13 +106,14 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 			p, err := Round(v.Price, State.PricePrecision)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			c := fmt.Sprintf("%.1f", v.Size)
 
 			// add event data to VData var
 			AddVData(p, v.Size)
+			//FileWrite(fmt.Sprintf("VData: %f - %f", p, v.Size))
 
 			// if side buy, print green
 			if v.Side == "buy" {
@@ -147,7 +148,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 			p, err := Round(cumulPrice, State.PricePrecision)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			c := fmt.Sprintf("%.1f", cumulSize)
@@ -172,13 +173,14 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 		p, err := Round(t.Data[0].Price, State.PricePrecision)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		c := fmt.Sprintf("%.1f", t.Data[0].Size)
 
 		// add event data to VData var
 		AddVData(p, t.Data[0].Size)
+		//FileWrite(fmt.Sprintf("VData: %f - %f", p, t.Data[0].Size))
 
 		// set session Open price if last price was init 0
 		if State.LastPrice == 0 {
