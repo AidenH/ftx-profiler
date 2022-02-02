@@ -56,11 +56,16 @@ func SocketInit() error {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		go handleTradeReplies(t, msg)
-		if State.ProfileTrue {
-			go PrintProfile()
-		}
-		go SetStatus()
+		go func() {
+			sockErr = handleTradeReplies(t, msg)
+			if sockErr != nil {
+				FileWrite(sockErr.Error())
+			}
+			if State.ProfileTrue {
+				PrintProfile()
+			}
+			SetStatus()
+		}()
 	}
 
 	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
