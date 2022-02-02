@@ -21,6 +21,7 @@ type ProgramSettings struct {
 }
 
 var PrecisionMap = map[int]int{
+	0: 1,
 	1: 10,
 	2: 100,
 	3: 1000,
