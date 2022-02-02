@@ -14,6 +14,7 @@ import (
 type CuiState struct {
 	Middle    float64
 	SetMiddle bool
+	LockWrite bool
 }
 
 // InitCui initialize gocui cui
@@ -22,6 +23,7 @@ func InitCui() (*gocui.Gui, error) {
 	CState = CuiState{
 		Middle:    0,
 		SetMiddle: true,
+		LockWrite: false,
 	}
 
 	g, err := gocui.NewGui(gocui.OutputNormal)

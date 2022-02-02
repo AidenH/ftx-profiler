@@ -56,16 +56,22 @@ func SocketInit() error {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		go func() {
-			sockErr = handleTradeReplies(t, msg)
-			if sockErr != nil {
-				FileWrite(sockErr.Error())
-			}
-			if State.ProfileTrue {
-				PrintProfile()
-			}
-			SetStatus()
-		}()
+		if !CState.LockWrite {
+			CState.LockWrite = true
+
+			go func() {
+				sockErr = handleTradeReplies(t, msg)
+				if sockErr != nil {
+					FileWrite(sockErr.Error())
+				}
+				if State.ProfileTrue {
+					PrintProfile()
+				}
+				SetStatus()
+
+				CState.LockWrite = false
+			}()
+		}
 	}
 
 	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
@@ -171,7 +177,6 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 			}
 
 			State.LastPrice = p
-
 		}
 
 	} else if len(t.Data) != 0 {
