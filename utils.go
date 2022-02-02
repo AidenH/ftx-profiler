@@ -3,12 +3,15 @@ package main
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"hash"
+	"io/ioutil"
 	"math"
-	"os"
+	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jroimartin/gocui"
 )
@@ -91,13 +94,27 @@ func AddVData(price float64, size float64) error {
 	return nil
 }
 
-func CreateSignature(msg string) (hash.Hash, error) {
-	//ts := time.Now().Unix()
-	secret := "test"
-	data := "test"
+func CreateSignature(msg string) (string, string, error) {
+	ts := time.Now().UnixMilli()
+	data := fmt.Sprint(ts, "GET", msg)
 
-	h := hmac.New(sha256.New, []byte(secret))
+	h := hmac.New(sha256.New, []byte(ApiSecret))
 	h.Write([]byte(data))
 
-	return nil, nil
+	sha := hex.EncodeToString(h.Sum(nil))
+
+	return sha, fmt.Sprint(ts), nil
+}
+
+func (a *AccountState) ParseHttpResp(resp *http.Response) error {
+	rbody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(rbody, &a); err != nil {
+		return err
+	}
+
+	return nil
 }
