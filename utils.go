@@ -20,14 +20,18 @@ type ProgramSettings struct {
 	VolumeSymbol string
 }
 
+// Negative price precisions not working currently - so no BTC as of yet!
 var PrecisionMap = map[int]int{
-	0: 1,
-	1: 10,
-	2: 100,
-	3: 1000,
-	4: 10000,
-	5: 100000,
-	6: 1000000,
+	-3: -1000,
+	-2: -100,
+	-1: -10,
+	0:  1,
+	1:  10,
+	2:  100,
+	3:  1000,
+	4:  10000,
+	5:  100000,
+	6:  1000000,
 }
 
 var ProfileUnitDiv = 10
@@ -40,19 +44,19 @@ func Round(input float64, precision int) (float64, error) {
 
 	if precision == 0 {
 		p = 1
-	} else {
+	} else if precision > 0 {
 		s := []string{"1", strings.Repeat("0", precision)}
 		p, err = strconv.Atoi(strings.Join(s, ""))
 		if err != nil {
 			return 0.0, err
 		}
+	} else {
+		p = PrecisionMap[precision]
 	}
 
 	pfloat := float64(p)
 
 	result := math.Round(input*pfloat) / pfloat
-
-	//FileWrite(fmt.Sprintf("Rounded: %f\n", result))
 
 	return result, nil
 }

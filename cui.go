@@ -39,7 +39,7 @@ func InitCui() (*gocui.Gui, error) {
 		log.Panicln(err)
 	}
 
-	initProfile("BTC-PERP", 0, 0, true, g)
+	initProfile("FTM-PERP", 0, 2, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
