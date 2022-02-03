@@ -34,7 +34,7 @@ var PrecisionMap = map[int]int{
 	6:  1000000,
 }
 
-var ProfileUnitDiv = 10
+//var ProfileUnitDiv = 10
 
 func Round(input float64, precision int) (float64, error) {
 	//FileWrite(fmt.Sprintf("Round\ninput:%f", input))

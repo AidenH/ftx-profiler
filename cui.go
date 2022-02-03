@@ -12,18 +12,20 @@ import (
 )
 
 type CuiState struct {
-	Middle    float64
-	SetMiddle bool
-	LockWrite bool
+	Middle         float64
+	SetMiddle      bool
+	LockWrite      bool
+	ProfileUnitDiv int
 }
 
 // InitCui initialize gocui cui
 func InitCui() (*gocui.Gui, error) {
 
 	CState = CuiState{
-		Middle:    0,
-		SetMiddle: true,
-		LockWrite: false,
+		Middle:         0,
+		SetMiddle:      true,
+		LockWrite:      false,
+		ProfileUnitDiv: 1,
 	}
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
@@ -71,7 +73,7 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 
-		v.Wrap = true
+		v.Wrap = false
 	}
 
 	// TAPE
@@ -103,17 +105,16 @@ func PrintProfile() error {
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
-		//Ladder = make(map[float64]int)
 
 		for i := fMaxY; i > 0.0; i-- {
 			current := ladderStart + (i / prec)
 			p := strconv.FormatFloat(current, 'f', State.PricePrecision, 64)
 			f, _ := strconv.ParseFloat(p, 64)
-			sizewidth := int(VData[f]) / ProfileUnitDiv
+			sizewidth := int(VData[f]) / CState.ProfileUnitDiv
 
 			// rescale profile proportions if vol length above half view width
 			if sizewidth >= maxX/3 {
-				ProfileUnitDiv *= 2
+				CState.ProfileUnitDiv *= 2
 			}
 
 			// print profile. if i = current price, mark on ladder
