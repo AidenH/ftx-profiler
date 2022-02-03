@@ -85,12 +85,16 @@ func FileWrite(dat string) error {
 
 func AddVData(price float64, size float64) error {
 
-	out, err := Round(size, int(State.SizeGranularity))
+	/*out, err := Round(size, int(State.SizeGranularity))
 	if err != nil {
 		return err
 	}
 
-	VData[price] += out
+	GuiDebugPrint("tape", fmt.Sprint(price, " ", size))
+
+	VData[float64(price)] += out*/
+
+	VData[price] += size
 
 	return nil
 }
