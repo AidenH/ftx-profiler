@@ -41,7 +41,11 @@ func InitCui() (*gocui.Gui, error) {
 		log.Panicln(err)
 	}
 
-	initProfile("FTM-PERP", 0, 2, true, g)
+	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, KeybindTest); err != nil {
+		log.Panicln(err)
+	}
+
+	initProfile("ETH-PERP", 0, 0, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
