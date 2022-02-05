@@ -34,8 +34,9 @@ var PrecisionMap = map[int]int{
 	6:  1000000,
 }
 
-func KeybindTest(*gocui.Gui, *gocui.View) error {
-	GuiDebugPrint("tape", "ENTER")
+func Recenter(*gocui.Gui, *gocui.View) error {
+	GuiDebugPrint("status", "\nResetting profile...")
+	CState.SetMiddle = true
 
 	return nil
 }
@@ -66,10 +67,10 @@ func Round(input float64, precision int) (float64, error) {
 }
 
 // GuiDebugPrint prints debug strings to the selected Gui View
-func GuiDebugPrint(v string, msg interface{}) error {
+func GuiDebugPrint(view string, msg interface{}) error {
 
 	State.Gui.Update(func(g *gocui.Gui) error {
-		v, err := g.View(v)
+		v, err := g.View(view)
 		if err != nil {
 			return err
 		}
