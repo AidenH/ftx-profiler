@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -123,12 +124,29 @@ func CreateSignature(msg string) (string, string, error) {
 func (a *AccountState) ParseHttpResp(resp *http.Response) error {
 	rbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println("error in ParseHttpResp: ioutil:")
+		fmt.Println("resp.Body output: ", resp.Body)
 		return err
 	}
 
+	//fmt.Println(string(rbody))
+
+	// apply json data to relevant Account struct fields
 	if err := json.Unmarshal(rbody, &a); err != nil {
+		fmt.Println("error in ParseHttpResp: unmarshal:")
+		fmt.Println("rbody output: ", rbody)
 		return err
 	}
 
 	return nil
+}
+
+func RetrieveAccountInfo() {
+	for {
+		if err := Account.GetAccountInfo(); err != nil {
+			log.Panicln(err)
+		}
+
+		time.Sleep(5 * time.Second)
+	}
 }

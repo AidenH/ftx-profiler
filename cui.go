@@ -191,7 +191,8 @@ func SetStatus() error {
 		p := strconv.FormatFloat(State.LastPrice, 'f', State.PricePrecision, 64)
 		o := strconv.FormatFloat(State.OpenPrice, 'f', State.PricePrecision, 64)
 
-		fmt.Fprintf(v, "%s - %s  OPEN: %s", State.Market, p, o)
+		fmt.Fprintf(v, "%s - %s  OPEN: %s    BALANCE: %.2f",
+			State.Market, p, o, Account.Result.Balance)
 
 		return nil
 	})
