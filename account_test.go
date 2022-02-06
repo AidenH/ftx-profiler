@@ -11,10 +11,9 @@ var resp *http.Response
 var err error = nil
 
 func TestGetAccountInfo(t *testing.T) {
-	dat := new(AccountState)
+	var Account = new(AccountState)
 
-	resp, err = GetAccountInfo()
-	if err != nil {
+	if err := Account.GetAccountInfo(); err != nil {
 		log.Panicln(err)
 	}
 
