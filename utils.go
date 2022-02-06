@@ -38,6 +38,7 @@ var PrecisionMap = map[int]int{
 func Recenter(*gocui.Gui, *gocui.View) error {
 	GuiDebugPrint("status", "\nResetting profile...")
 	CState.SetMiddle = true
+	GuiDebugPrint("tape", Account.Open)
 
 	return nil
 }
@@ -146,12 +147,15 @@ func (a *AccountState) ParseHttpResp(resp *http.Response) error {
 // necessary
 func RetrieveAccountInfo() {
 	for {
+
+		// http request get account info
 		if err := Account.GetAccountInfo(); err != nil {
 			log.Panicln(err)
 		}
 
-		o := Account.Result.Open
+		o := Account.Open
 
+		// fill out active account information
 		for _, i := range Account.Result.PositionsData {
 			if i.Future == State.Market {
 				if i.Size > 0 {

@@ -17,14 +17,14 @@ type AccountState struct {
 			Side   string  `json:"side"`
 			Pnl    float64 `json:"unrealizedPnl"`
 		}
+	}
 
-		// actual open position defined at RetrieveAccountInfo
-		Open struct {
-			Entry float64
-			Size  float64
-			Side  string
-			Pnl   float64
-		}
+	// open position populated during RetrieveAccountInfo
+	Open struct {
+		Entry float64
+		Size  float64
+		Side  string
+		Pnl   float64
 	}
 }
 
