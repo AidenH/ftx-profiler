@@ -53,6 +53,7 @@ func initProfile(
 
 	HandleOsArgs()
 
+	// init continuous account info checks
 	go RetrieveAccountInfo()
 
 	err := SocketInit()

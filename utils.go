@@ -141,6 +141,8 @@ func (a *AccountState) ParseHttpResp(resp *http.Response) error {
 	return nil
 }
 
+// RetrieveAccountInfo, called as a goroutine, will perform intermittent checks on user's
+// account balance, open positions and other account information. To be added to as necessary
 func RetrieveAccountInfo() {
 	for {
 		if err := Account.GetAccountInfo(); err != nil {
