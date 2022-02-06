@@ -8,7 +8,10 @@ type AccountState struct {
 	Result struct {
 		PosSize   float64 `json:"totalPositionSize"`
 		Balance   float64 `json:"totalAccountValue"`
-		Positions []map[string]interface{}
+		Positions []struct {
+			Future string  `json:"future"`
+			Size   float64 `json:"openSize"`
+		}
 	}
 }
 
