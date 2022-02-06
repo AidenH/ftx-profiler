@@ -17,7 +17,17 @@ func TestGetAccountInfo(t *testing.T) {
 		log.Panicln(err)
 	}
 
-	dat.ParseHttpResp(resp)
+	fmt.Print("\nAccount Info: ", Account.Result, "\n\n")
+}
 
-	fmt.Println(dat.Result.Balance)
+// not sure this is necessary as GetAccountInfo gets all the relevant info
+// in a more consistent manner
+func TestGetOpenPositions(t *testing.T) {
+	Account := new(AccountState)
+
+	if err := Account.GetOpenPositions(); err != nil {
+		log.Panicln(err)
+	}
+
+	fmt.Println("Positions: ", Account)
 }

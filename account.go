@@ -43,6 +43,30 @@ func (a *AccountState) GetAccountInfo() error {
 	return nil
 }
 
-func GetOpenPositions() (*http.Response, error) {
-	return nil, nil
+// GetOpenPositions() returns a user's open exchange positions
+func (a *AccountState) GetOpenPositions() error {
+	req, err := http.NewRequest("GET", "https://ftx.com/api/positions", nil)
+	if err != nil {
+		return err
+	}
+
+	signature, ts, err := CreateSignature("/api/positions")
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("FTX-KEY", Api)
+	req.Header.Add("FTX-SIGN", signature)
+	req.Header.Add("FTX-TS", ts)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if err := a.ParseHttpResp(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
