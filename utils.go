@@ -150,9 +150,21 @@ func RetrieveAccountInfo() {
 			log.Panicln(err)
 		}
 
-		for _, i := range Account.Result.Positions {
-			if i.Future == State.Market && i.Size > 0 {
-				GuiDebugPrint("tape", i.Size)
+		o := Account.Result.Open
+
+		for _, i := range Account.Result.PositionsData {
+			if i.Future == State.Market {
+				if i.Size > 0 {
+					o.Entry = i.Entry
+					o.Size = i.Size
+					o.Side = i.Side
+					o.Pnl = i.Pnl
+				} else {
+					o.Entry = 0
+					o.Size = 0
+					o.Side = ""
+					o.Pnl = 0
+				}
 			}
 		}
 

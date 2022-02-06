@@ -6,11 +6,24 @@ import (
 
 type AccountState struct {
 	Result struct {
-		PosSize   float64 `json:"totalPositionSize"`
-		Balance   float64 `json:"totalAccountValue"`
-		Positions []struct {
+		PosSize float64 `json:"totalPositionSize"`
+		Balance float64 `json:"totalAccountValue"`
+
+		// data returned from http request
+		PositionsData []struct {
 			Future string  `json:"future"`
+			Entry  float64 `json:"entryPrice"`
 			Size   float64 `json:"openSize"`
+			Side   string  `json:"side"`
+			Pnl    float64 `json:"unrealizedPnl"`
+		}
+
+		// actual open position defined at RetrieveAccountInfo
+		Open struct {
+			Entry float64
+			Size  float64
+			Side  string
+			Pnl   float64
 		}
 	}
 }
