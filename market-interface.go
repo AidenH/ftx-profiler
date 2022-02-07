@@ -12,9 +12,16 @@ import (
 const SocketEndpoint = "wss://ftx.com/ws/"
 
 type Request struct {
+	Args    Args   `json:"args"`
 	Op      string `json:"op"`
 	Channel string `json:"channel"`
 	Market  string `json:"market"`
+}
+
+type Args struct {
+	Key  string `json:"key"`
+	Sign string `json:"sign"`
+	Time int64  `json:"time"`
 }
 
 type TradesResponse struct {
@@ -45,10 +52,11 @@ func SocketInit() error {
 
 		// send json ping to server
 		pingRequest(socket)
-		subscribeRequest(socket)
 
-		//clear terminal
-		//fmt.Println("\033[H\033[2J")
+		// attempt sub to trades, fills, orders
+		subscribeRequest(socket, "trades")
+		subscribeRequest(socket, "fills")
+		subscribeRequest(socket, "orders")
 	}
 
 	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
@@ -231,26 +239,63 @@ func pingRequest(s gowebsocket.Socket) error {
 	return nil
 }
 
-func subscribeRequest(s gowebsocket.Socket) error {
-	dat, err := json.Marshal(Request{
-		Op:      "subscribe",
-		Channel: "trades",
-		Market:  State.Market,
-	})
-	if err != nil {
-		return err
+// subscribeRequest connects websocket client to provided FTX stream
+func subscribeRequest(s gowebsocket.Socket, ch string) error {
+	var signature string
+	var ts int64
+	var err error
+	var dat []byte
+	var Auth Args
+
+	// if user is subscribing to 'orders' or 'fills' streams
+	if ch == "orders" || ch == "fills" {
+		signature, ts, err = CreateSocketSignature()
+		if err != nil {
+			return err
+		}
+
+		// args for authorization
+		Auth = Args{
+			Key:  Api,
+			Sign: signature,
+			Time: ts,
+		}
+
+		// rest of packet including args
+		dat, err = json.Marshal(Request{
+			Args: Auth,
+			Op:   "login",
+		})
+		if err != nil {
+			return err
+		}
+
+	} else {
+		// trades subscribe packet
+		dat, err = json.Marshal(Request{
+			Args:    Auth,
+			Op:      "subscribe",
+			Channel: ch,
+			Market:  State.Market,
+		})
+		if err != nil {
+			return err
+		}
+
 	}
+
+	fmt.Println(string(dat))
 
 	s.SendBinary(dat)
 
 	return nil
 }
 
-func unsubscribeRequest(s gowebsocket.Socket) error {
+func unsubscribeRequest(s gowebsocket.Socket, ch string) error {
 	dat, err := json.Marshal(Request{
 		Op:      "unsubscribe",
-		Channel: "trades",
-		Market:  "NEAR-PERP",
+		Channel: ch,
+		Market:  State.Market,
 	})
 	if err != nil {
 		return err

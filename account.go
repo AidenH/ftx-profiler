@@ -61,7 +61,7 @@ func (a *AccountState) GetAccountInfo() error {
 		return err
 	}
 
-	signature, ts, err := CreateSignature("/api/account")
+	signature, ts, err := CreateHttpSignature("/api/account")
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (o *Orders) GetOpenOrders() error {
 		return err
 	}
 
-	signature, ts, err := CreateSignature(
+	signature, ts, err := CreateHttpSignature(
 		fmt.Sprintf("/api/orders?market=%s", "GALA-PERP"))
 	if err != nil {
 		return err

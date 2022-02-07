@@ -110,7 +110,7 @@ func AddVData(price float64, size float64) error {
 	return nil
 }
 
-func CreateSignature(msg string) (string, string, error) {
+func CreateHttpSignature(msg string) (string, string, error) {
 	ts := time.Now().UnixMilli()
 	data := fmt.Sprint(ts, "GET", msg)
 
@@ -122,6 +122,22 @@ func CreateSignature(msg string) (string, string, error) {
 	return sha, fmt.Sprint(ts), nil
 }
 
+func CreateSocketSignature() (string, int64, error) {
+	ts := time.Now().UnixMilli()
+	data := fmt.Sprint(ts, "websocket_login")
+
+	h := hmac.New(sha256.New, []byte(ApiSecret))
+
+	_, err := h.Write([]byte(data))
+	if err != nil {
+		return "", 0, err
+	}
+
+	sha := hex.EncodeToString(h.Sum(nil))
+
+	return sha, ts, nil
+}
+
 func ParseHttpResp(resp *http.Response, out interface{}) error {
 	rbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -130,7 +146,7 @@ func ParseHttpResp(resp *http.Response, out interface{}) error {
 		return err
 	}
 
-	fmt.Println(string(rbody))
+	//fmt.Println(string(rbody))
 
 	// apply json data to relevant Account struct fields
 	if err := json.Unmarshal(rbody, &out); err != nil {

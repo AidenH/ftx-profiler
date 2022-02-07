@@ -71,8 +71,15 @@ func layout(g *gocui.Gui) error {
 		}
 	}
 
+	// ORDERS AND POSITIONS
+	if _, err := g.SetView("orders", 0, yOffset, (maxX/15)-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+	}
+
 	// PROFILE
-	if v, err := g.SetView("profile", 0, yOffset, (maxX/3*2)-1, maxY-1); err != nil {
+	if v, err := g.SetView("profile", maxX/15, yOffset, (maxX/3*2)-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -123,16 +130,35 @@ func PrintProfile() error {
 
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
-				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
 
 				if i < 3 || i > (fMaxY-3) {
 					CState.SetMiddle = true
 				}
 
 			} else {
-				fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+				if VData[f] > 0 {
+					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+				} else {
+					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+				}
 			}
 		}
+
+		return nil
+	})
+
+	return nil
+}
+
+func PrintOrders() error {
+	State.Gui.Update(func(g *gocui.Gui) error {
+		v, err := g.View("orders")
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintln(v, OpenOrders.Result)
 
 		return nil
 	})
