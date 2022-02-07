@@ -38,7 +38,7 @@ var PrecisionMap = map[int]int{
 func Recenter(*gocui.Gui, *gocui.View) error {
 	GuiDebugPrint("status", "\nResetting profile...")
 	CState.SetMiddle = true
-	GuiDebugPrint("tape", Account.Open)
+	GuiDebugPrint("tape", Account.Position)
 
 	return nil
 }
@@ -122,7 +122,7 @@ func CreateSignature(msg string) (string, string, error) {
 	return sha, fmt.Sprint(ts), nil
 }
 
-func (a *AccountState) ParseHttpResp(resp *http.Response) error {
+func ParseHttpResp(resp *http.Response, out interface{}) error {
 	rbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("error in ParseHttpResp: ioutil:")
@@ -130,14 +130,21 @@ func (a *AccountState) ParseHttpResp(resp *http.Response) error {
 		return err
 	}
 
-	//fmt.Println(string(rbody))
+	fmt.Println(string(rbody))
 
 	// apply json data to relevant Account struct fields
-	if err := json.Unmarshal(rbody, &a); err != nil {
+	if err := json.Unmarshal(rbody, &out); err != nil {
 		fmt.Println("error in ParseHttpResp: unmarshal:")
-		fmt.Println("rbody output: ", rbody)
+		fmt.Println("rbody output: ", string(rbody))
 		return err
 	}
+
+	// check for http request error response
+	/*if !out.Success {
+		fmt.Println("error: http request")
+		err := errors.New(a.Error)
+		return err
+	}*/
 
 	return nil
 }
@@ -153,7 +160,7 @@ func RetrieveAccountInfo() {
 			log.Panicln(err)
 		}
 
-		o := Account.Open
+		o := Account.Position
 
 		// fill out active account information
 		for _, i := range Account.Result.PositionsData {

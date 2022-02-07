@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/jroimartin/gocui"
@@ -21,9 +22,13 @@ type ProgramState struct {
 var VData = make(map[float64]float64)
 var Ladder = make(map[float64]int)
 
+var OpenOrders = Orders{}
 var Settings = ProgramSettings{}
 var State = ProgramState{}
+var Account = AccountState{}
 var CState = CuiState{}
+
+var client = &http.Client{}
 
 var LogFile, _ = os.Create("/home/lurkcs/profiler-output-log")
 
