@@ -18,6 +18,10 @@ func HandleOsArgs() {
 
 			State.TapeTrue = false
 
+		} else if item == "volume-counts" {
+
+			State.VolumeCounts = true
+
 		}
 	}
 }

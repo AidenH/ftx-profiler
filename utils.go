@@ -38,7 +38,6 @@ var PrecisionMap = map[int]int{
 func Recenter(*gocui.Gui, *gocui.View) error {
 	GuiDebugPrint("status", "\nResetting profile...")
 	CState.SetMiddle = true
-	GuiDebugPrint("tape", Account.Position)
 
 	return nil
 }
@@ -154,13 +153,6 @@ func ParseHttpResp(resp *http.Response, out interface{}) error {
 		fmt.Println("rbody output: ", string(rbody))
 		return err
 	}
-
-	// check for http request error response
-	/*if !out.Success {
-		fmt.Println("error: http request")
-		err := errors.New(a.Error)
-		return err
-	}*/
 
 	return nil
 }

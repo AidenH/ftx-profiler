@@ -103,10 +103,6 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		CState.SetMiddle = false
 	}
 
-	/*if !CState.SetMiddle {
-		PrintProfile()
-	}*/
-
 	// function here to handle replies based on "type" field
 	json.Unmarshal([]byte(msg), &t)
 
@@ -239,52 +235,49 @@ func pingRequest(s gowebsocket.Socket) error {
 	return nil
 }
 
-// subscribeRequest connects websocket client to provided FTX stream
-func subscribeRequest(s gowebsocket.Socket, ch string) error {
-	var signature string
-	var ts int64
-	var err error
-	var dat []byte
-	var Auth Args
-
-	// if user is subscribing to 'orders' or 'fills' streams
-	if ch == "orders" || ch == "fills" {
-		signature, ts, err = CreateSocketSignature()
-		if err != nil {
-			return err
-		}
-
-		// args for authorization
-		Auth = Args{
-			Key:  Api,
-			Sign: signature,
-			Time: ts,
-		}
-
-		// rest of packet including args
-		dat, err = json.Marshal(Request{
-			Args: Auth,
-			Op:   "login",
-		})
-		if err != nil {
-			return err
-		}
-
-	} else {
-		// trades subscribe packet
-		dat, err = json.Marshal(Request{
-			Args:    Auth,
-			Op:      "subscribe",
-			Channel: ch,
-			Market:  State.Market,
-		})
-		if err != nil {
-			return err
-		}
-
+func AuthStreamLogin(s gowebsocket.Socket) error {
+	signature, ts, err := CreateSocketSignature()
+	if err != nil {
+		return err
 	}
 
-	fmt.Println(string(dat))
+	// args for authorization
+	Auth := Args{
+		Key:  Api,
+		Sign: signature,
+		Time: ts,
+	}
+
+	// rest of packet including args
+	dat, err := json.Marshal(Request{
+		Args: Auth,
+		Op:   "login",
+	})
+	if err != nil {
+		return err
+	}
+
+	s.SendBinary(dat)
+
+	return nil
+}
+
+// subscribeRequest connects websocket client to provided FTX stream
+func subscribeRequest(s gowebsocket.Socket, typ string) error {
+	var Auth Args
+
+	// trades subscribe packet
+	dat, err := json.Marshal(Request{
+		Args:    Auth,
+		Op:      "subscribe",
+		Channel: typ,
+		Market:  State.Market,
+	})
+	if err != nil {
+		return err
+	}
+
+	//fmt.Println(string(dat))
 
 	s.SendBinary(dat)
 

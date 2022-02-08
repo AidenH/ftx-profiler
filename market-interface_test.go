@@ -50,7 +50,7 @@ func TestTradesSocket(t *testing.T) {
 }
 
 func TestOrdersSocket(t *testing.T) {
-	State.Market = "BTC-PERP"
+	State.Market = "GALA-PERP"
 
 	socket := gowebsocket.New(SocketEndpoint)
 	var resp string
@@ -58,6 +58,11 @@ func TestOrdersSocket(t *testing.T) {
 	socket.OnConnected = func(socket gowebsocket.Socket) {
 		log.Println("connected!")
 		pingRequest(socket)
+
+		if err := AuthStreamLogin(socket); err != nil {
+			fmt.Println(err.Error())
+			t.Fail()
+		}
 
 		if err := subscribeRequest(socket, "orders"); err != nil {
 			fmt.Println(err.Error())

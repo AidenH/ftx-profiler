@@ -37,15 +37,15 @@ func InitCui() (*gocui.Gui, error) {
 
 	g.SetManagerFunc(layout)
 
-	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+	if err := g.SetKeybinding("", gocui.KeyEsc, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
 
-	if err := g.SetKeybinding("", gocui.KeySpace, gocui.ModNone, Recenter); err != nil {
+	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, Recenter); err != nil {
 		log.Panicln(err)
 	}
 
-	initProfile("GALA-PERP", 0, 3, true, g)
+	initProfile("GALA-PERP", 0, 4, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
@@ -130,14 +130,19 @@ func PrintProfile() error {
 
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
-				fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+
+				if VData[f] > 0 && State.VolumeCounts {
+					fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+				} else {
+					fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+				}
 
 				if i < 3 || i > (fMaxY-3) {
 					CState.SetMiddle = true
 				}
 
 			} else {
-				if VData[f] > 0 {
+				if VData[f] > 0 && State.VolumeCounts {
 					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
 				} else {
 					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))

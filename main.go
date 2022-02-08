@@ -17,6 +17,7 @@ type ProgramState struct {
 	Gui             *gocui.Gui
 	TapeTrue        bool
 	ProfileTrue     bool
+	VolumeCounts    bool
 }
 
 var VData = make(map[float64]float64)
