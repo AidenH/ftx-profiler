@@ -21,6 +21,7 @@ type CuiState struct {
 // InitCui initialize gocui cui
 func InitCui() (*gocui.Gui, error) {
 
+	// write cui defaults
 	CState = CuiState{
 		Middle:         0,
 		SetMiddle:      true,
@@ -37,15 +38,27 @@ func InitCui() (*gocui.Gui, error) {
 
 	g.SetManagerFunc(layout)
 
-	if err := g.SetKeybinding("", gocui.KeyEsc, gocui.ModNone, quit); err != nil {
+	// quit
+	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
 
+	// recenter profile
 	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, Recenter); err != nil {
-		log.Panicln(err)
+		panic(err)
 	}
 
-	initProfile("GALA-PERP", 0, 4, true, g)
+	// clear volume map
+	if err := g.SetKeybinding("", gocui.KeyCtrlR, gocui.ModNone, ClearVolume); err != nil {
+		panic(err)
+	}
+
+	// save volume data to file
+	if err := g.SetKeybinding("", gocui.KeyCtrlS, gocui.ModNone, VolWrite); err != nil {
+		panic(err)
+	}
+
+	initProfile("SLP-PERP", 0, 4, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
@@ -94,6 +107,31 @@ func layout(g *gocui.Gui) error {
 		}
 
 		v.Autoscroll = true
+	}
+
+	return nil
+}
+
+// Recenter recenters profile on screen
+func Recenter(g *gocui.Gui, v *gocui.View) error {
+	CState.SetMiddle = true
+
+	GuiDebugPrint("status", "\nResetting profile...")
+
+	return nil
+}
+
+// ClearVolume will empty VData and reset profile
+func ClearVolume(g *gocui.Gui, v *gocui.View) error {
+	VData = make(map[float64]float64)
+	CState.ProfileUnitDiv = 1
+
+	Recenter(g, v)
+	GuiDebugPrint("status", "Clearing volume data...")
+
+	if len(VData) != 0 {
+		err := errors.New("VData not cleared")
+		return err
 	}
 
 	return nil

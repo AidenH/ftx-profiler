@@ -48,13 +48,6 @@ var PrecisionMap = map[int]int{
 	6:  1000000,
 }
 
-func Recenter(*gocui.Gui, *gocui.View) error {
-	GuiDebugPrint("status", "\nResetting profile...")
-	CState.SetMiddle = true
-
-	return nil
-}
-
 func Round(input float64, precision int) (float64, error) {
 	//FileWrite(fmt.Sprintf("Round\ninput:%f", input))
 
