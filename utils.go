@@ -19,6 +19,19 @@ import (
 
 type ProgramSettings struct {
 	VolumeSymbol string
+	PriceMarker  string
+}
+
+var Color = struct {
+	Red     string
+	Green   string
+	Purple  string
+	Default string
+}{
+	Red:     "www",
+	Green:   "www",
+	Purple:  "\033[35m",
+	Default: "\033[0m",
 }
 
 // Negative price precisions not working currently - so no BTC as of yet!

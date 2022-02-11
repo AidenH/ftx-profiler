@@ -132,9 +132,23 @@ func PrintProfile() error {
 			if f == State.LastPrice {
 
 				if VData[f] > 0 && State.VolumeCounts {
-					fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
+					//	strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+					fmt.Fprintf(v, "%s%s%s  - %s %g\n",
+						Color.Purple,
+						p,
+						Color.Default,
+						strings.Repeat(Settings.VolumeSymbol, sizewidth),
+						VData[f])
+
 				} else {
-					fmt.Fprintln(v, "\033[35m", p, "\033[0m- ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
+					//	strings.Repeat(Settings.VolumeSymbol, sizewidth))
+					fmt.Fprintf(v, "%s%s%s  - %s\n",
+						Color.Purple,
+						p,
+						Color.Default,
+						strings.Repeat(Settings.VolumeSymbol, sizewidth))
 				}
 
 				if i < 3 || i > (fMaxY-3) {
