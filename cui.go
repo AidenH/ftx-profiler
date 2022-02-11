@@ -238,12 +238,12 @@ func PrintTape(side string, price float64, size string) error {
 			p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
 
 			if side == "buy" {
-				str := fmt.Sprintf("%s %s - %s %s", "\033[32m", p, size, "\033[0m")
+				str := fmt.Sprintf("%s %s - %s %s", Color.Green, p, size, Color.Default)
 				fmt.Fprintln(v, str)
 
 				//FileWrite(str)
 			} else if side == "sell" {
-				str := fmt.Sprintf("%s %s - %s %s", "\033[31m", p, size, "\033[0m")
+				str := fmt.Sprintf("%s %s - %s %s", Color.Red, p, size, Color.Default)
 				fmt.Fprintln(v, str)
 
 				//FileWrite(str)

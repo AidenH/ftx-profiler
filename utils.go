@@ -25,13 +25,13 @@ type ProgramSettings struct {
 }
 
 var Color = struct {
-	Red     string
 	Green   string
+	Red     string
 	Purple  string
 	Default string
 }{
-	Red:     "www",
-	Green:   "www",
+	Green:   "\033[32m",
+	Red:     "\033[31m",
 	Purple:  "\033[35m",
 	Default: "\033[0m",
 }
