@@ -64,6 +64,7 @@ func SocketInit() error {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+
 		if !CState.LockWrite {
 			CState.LockWrite = true
 

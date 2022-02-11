@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -95,6 +97,30 @@ func FileWrite(dat string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func VolWrite(*gocui.Gui, *gocui.View) error {
+	ts := time.Now().Format(time.Stamp)
+	//homeDir, _ := os.UserHomeDir()
+	filename := fmt.Sprintf("%s/voldata-%s",
+		HomeDir,
+		strings.Replace(ts, " ", "-", -1))
+	var err error
+
+	VolFile, err = os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	e := gob.NewEncoder(VolFile)
+
+	if err = e.Encode(VData); err != nil {
+		panic(err)
+	}
+
+	VolFile.Close()
 
 	return nil
 }

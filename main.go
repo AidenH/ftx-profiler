@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/fs"
+	"log"
 	"net/http"
 	"os"
 
@@ -8,16 +11,19 @@ import (
 )
 
 type ProgramState struct {
+	// market
 	Market          string
 	LastPrice       float64
 	OpenPrice       float64
 	SizeGranularity float64
 	PricePrecision  int
 	Aggregate       bool
-	Gui             *gocui.Gui
-	TapeTrue        bool
-	ProfileTrue     bool
-	VolumeCounts    bool
+
+	// application
+	Gui          *gocui.Gui
+	TapeTrue     bool
+	ProfileTrue  bool
+	VolumeCounts bool
 }
 
 var VData = make(map[float64]float64)
@@ -31,7 +37,9 @@ var CState = CuiState{}
 
 var client = &http.Client{}
 
-var LogFile, _ = os.Create("/home/lurkcs/profiler-output-log")
+var HomeDir, _ = os.UserHomeDir()
+var LogFile *os.File
+var VolFile *os.File
 
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
@@ -53,8 +61,9 @@ func initProfile(
 	}
 
 	Settings = ProgramSettings{
-		// Recommend '#' or '█'
+		// i recommend '#' or '█'
 		VolumeSymbol: "█",
+		PriceMarker:  "<",
 	}
 
 	HandleOsArgs()
@@ -68,11 +77,31 @@ func initProfile(
 }
 
 func main() {
+	var err error
+
+	if err = os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), fs.ModeDir); err != nil {
+		errType := fmt.Sprintf("%T", err)
+
+		// does ~/.ftx-profiler/ already exist?
+		if errType == "*fs.PathError" {
+			log.Println("~/.ftx-profiler/ already present")
+		} else {
+			panic(err)
+		}
+	}
+
+	LogFile, err = os.Create(fmt.Sprintf("%s/.dwm/profiler-output-log", HomeDir))
+	if err != nil {
+		log.Println("unable to create log file")
+		panic(err)
+	}
 	defer LogFile.Close()
 
 	InitCui()
 
 	LogFile.Sync()
 
+	// ideally initProfile would be started here with a passed gui instance, instead
+	// of at cui.go:61. but still have not been able to make this work
 	//socket := initProfile("NEAR-PERP", 1, 0, true, g)
 }
