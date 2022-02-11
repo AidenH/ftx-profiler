@@ -172,7 +172,7 @@ func PrintProfile() error {
 				if VData[f] > 0 && State.VolumeCounts {
 					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
 					//	strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
-					fmt.Fprintf(v, "%s%s%s  - %s %g\n",
+					fmt.Fprintf(v, "%s%s%s  -  %s %g\n",
 						Color.Purple,
 						p,
 						Color.Default,
@@ -182,7 +182,7 @@ func PrintProfile() error {
 				} else {
 					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
 					//	strings.Repeat(Settings.VolumeSymbol, sizewidth))
-					fmt.Fprintf(v, "%s%s%s  - %s\n",
+					fmt.Fprintf(v, "%s%s%s  -  %s\n",
 						Color.Purple,
 						p,
 						Color.Default,
