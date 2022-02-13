@@ -61,6 +61,7 @@ func InitCui() (*gocui.Gui, error) {
 	initProfile("SLP-PERP", 0, 4, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		FileWrite(fmt.Sprintf("%s", err))
 		return nil, err
 	}
 

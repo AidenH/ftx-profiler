@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -79,7 +78,7 @@ func initProfile(
 func main() {
 	var err error
 
-	if err = os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), fs.ModeDir); err != nil {
+	if err = os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), 0700); err != nil {
 		errType := fmt.Sprintf("%T", err)
 
 		// does ~/.ftx-profiler/ already exist?

@@ -104,7 +104,7 @@ func FileWrite(dat string) error {
 func VolWrite(*gocui.Gui, *gocui.View) error {
 	ts := time.Now().Format(time.Stamp)
 	//homeDir, _ := os.UserHomeDir()
-	filename := fmt.Sprintf("%s/voldata-%s",
+	filename := fmt.Sprintf("%s/.ftx-profiler/voldata-%s",
 		HomeDir,
 		strings.Replace(ts, " ", "-", -1))
 	var err error
