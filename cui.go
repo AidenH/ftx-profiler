@@ -161,17 +161,14 @@ func PrintProfile() error {
 			f, _ := strconv.ParseFloat(p, 64)
 			sizewidth := int(VData[f]) / CState.ProfileUnitDiv
 
-			// rescale profile proportions if vol length above half view width
+			// rescale profile bar proportions if vol length above half view width
 			if sizewidth >= maxX/3 {
 				CState.ProfileUnitDiv *= 2
 			}
 
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
-
 				if VData[f] > 0 && State.VolumeCounts {
-					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
-					//	strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
 					fmt.Fprintf(v, "%s%s%s  -  %s %g\n",
 						Color.Purple,
 						p,
@@ -180,8 +177,6 @@ func PrintProfile() error {
 						VData[f])
 
 				} else {
-					//fmt.Fprintln(v, "\033[35m", p, "\033[0m- ",
-					//	strings.Repeat(Settings.VolumeSymbol, sizewidth))
 					fmt.Fprintf(v, "%s%s%s  -  %s\n",
 						Color.Purple,
 						p,
@@ -189,15 +184,21 @@ func PrintProfile() error {
 						strings.Repeat(Settings.VolumeSymbol, sizewidth))
 				}
 
+				// if price reaches extremes of visible profile, reset middle coord
 				if i < 3 || i > (fMaxY-3) {
 					CState.SetMiddle = true
 				}
 
 			} else {
 				if VData[f] > 0 && State.VolumeCounts {
-					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth), VData[f])
+					fmt.Fprintf(v, "%s  -  %s %g\n",
+						p,
+						strings.Repeat(Settings.VolumeSymbol, sizewidth),
+						VData[f])
 				} else {
-					fmt.Fprintln(v, p, " - ", strings.Repeat(Settings.VolumeSymbol, sizewidth))
+					fmt.Fprintf(v, "%s  -  %s\n",
+						p,
+						strings.Repeat(Settings.VolumeSymbol, sizewidth))
 				}
 			}
 		}
