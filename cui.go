@@ -152,10 +152,15 @@ func PrintProfile() error {
 		}
 
 		maxX, maxY := v.Size()
-		fMaxY := float64(maxY)
+		fMaxY := float64(maxY) // floatify Y-size for fewer casts during later for loop
 
 		prec := float64(PrecisionMap[State.PricePrecision])
-		modPrice := CState.Middle * prec
+		// bring price up to int precision so we can subtract x amount of price levels
+		// where x = half of the viewport rows. basically calculating the beginning of
+		// the price ladder relative to global price precision
+		modPrice := CState.Middle * prec // e.g. 0.0289 * 1000
+		// shift price a relative amount of precision decimal points, then subtract
+		// half of viewport rows, then shift back to proper price size
 		ladderStart := (modPrice - float64(maxY/2)) / prec
 
 		v.Clear()
