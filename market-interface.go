@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/sacOO7/gowebsocket"
 )
@@ -56,7 +57,8 @@ type ReplyData struct {
 func SocketInit() error {
 
 	socket := gowebsocket.New(SocketEndpoint)
-	var t TradesResponse
+	//var t TradesResponse
+	//var o OrdersResponse
 
 	var sockErr error
 
@@ -78,21 +80,31 @@ func SocketInit() error {
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 
-		if !CState.LockWrite {
-			CState.LockWrite = true
+		if strings.Contains(msg, "orders") {
+			sockErr = handleOrderReplies(msg)
+			if sockErr != nil {
+				FileWrite(sockErr.Error())
+			}
 
-			go func() {
-				sockErr = handleTradeReplies(t, msg)
-				if sockErr != nil {
-					FileWrite(sockErr.Error())
-				}
-				if State.ProfileTrue {
-					PrintProfile()
-				}
-				SetStatus()
+		} else if strings.Contains(msg, "trades") {
+			if !CState.LockWrite {
+				CState.LockWrite = true
 
-				CState.LockWrite = false
-			}()
+				go func() {
+					sockErr = handleTradeReplies(msg)
+					if sockErr != nil {
+						FileWrite(sockErr.Error())
+					}
+					if State.ProfileTrue {
+						PrintProfile()
+					}
+					SetStatus()
+
+					CState.LockWrite = false
+				}()
+			}
+		} else {
+			sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
 		}
 	}
 
@@ -108,7 +120,20 @@ func SocketInit() error {
 
 }
 
-func handleTradeReplies(t TradesResponse, msg string) error {
+func handleOrderReplies(msg string) error {
+	var o OrdersResponse
+
+	GuiDebugPrint("tape", msg)
+
+	if err := json.Unmarshal([]byte(msg), &o); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func handleTradeReplies(msg string) error {
+	var t TradesResponse
 
 	// if SetMiddle is armed and last price is not init-0, add new last price
 	//  middle-of-profile price
@@ -118,7 +143,9 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 	}
 
 	// function here to handle replies based on "type" field
-	json.Unmarshal([]byte(msg), &t)
+	if err := json.Unmarshal([]byte(msg), &t); err != nil {
+		return err
+	}
 
 	// if more than one Data element, iterate through items
 	// else, just display one Data item
