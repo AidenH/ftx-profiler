@@ -125,6 +125,10 @@ func VolWrite(*gocui.Gui, *gocui.View) error {
 	return nil
 }
 
+func VolRead() error {
+	return nil
+}
+
 func AddVData(price float64, size float64) error {
 
 	/*out, err := Round(size, int(State.SizeGranularity))
