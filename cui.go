@@ -61,7 +61,7 @@ func InitCui() (*gocui.Gui, error) {
 	initProfile("SLP-PERP", 0, 4, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
-		FileWrite(fmt.Sprintf("%s", err))
+		FileWrite(fmt.Sprintf("%s", err.Error()))
 		return nil, err
 	}
 
@@ -77,6 +77,10 @@ func layout(g *gocui.Gui) error {
 	} else {
 		yOffset = 0
 	}
+
+	// set highlight color
+	g.SelBgColor = gocui.ColorWhite
+	g.SelFgColor = gocui.ColorBlue
 
 	// STATUS BAR
 	if _, err := g.SetView("status", 0, 0, maxX-1, 3); err != nil {
