@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"testing"
@@ -20,6 +21,7 @@ func TestTradesSocket(t *testing.T) {
 
 	socket := gowebsocket.New(SocketEndpoint)
 	var resp string
+	var tr TradesResponse
 
 	socket.OnConnected = func(socket gowebsocket.Socket) {
 		log.Println("connected!")
@@ -37,23 +39,25 @@ func TestTradesSocket(t *testing.T) {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		fmt.Println(msg)
+		json.Unmarshal([]byte(msg), &tr)
+		fmt.Println(tr)
 	}
 
 	socket.Connect()
 
 	for resp == "" {
-		if resp != "" {
-			fmt.Println(resp)
+		if tr.Type == "subscribed" {
+			return
 		}
 	}
 }
 
 func TestOrdersSocket(t *testing.T) {
-	State.Market = "GALA-PERP"
+	State.Market = "BTC-PERP"
 
 	socket := gowebsocket.New(SocketEndpoint)
 	var resp string
+	var ord OrdersResponse
 
 	socket.OnConnected = func(socket gowebsocket.Socket) {
 		log.Println("connected!")
@@ -76,14 +80,15 @@ func TestOrdersSocket(t *testing.T) {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		fmt.Println(msg)
+		json.Unmarshal([]byte(msg), &ord)
+		fmt.Println(ord)
 	}
 
 	socket.Connect()
 
 	for resp == "" {
-		if resp != "" {
-			fmt.Println(resp)
+		if ord.Type == "subscribed" {
+			return
 		}
 	}
 
