@@ -31,13 +31,26 @@ type TradesResponse struct {
 	Data    []ReplyData `json:"data"`
 }
 
+type OrdersResponse struct {
+	Channel string    `json:"channel"`
+	Type    string    `json:"type"`
+	Data    ReplyData `json:"data"`
+}
+
 type ReplyData struct {
-	Id          int     `json:"id"`
-	Price       float64 `json:"price"`
-	Size        float64 `json:"size"`
-	Side        string  `json:"side"`
-	Liquidation bool    `json:"liquidation"`
-	Time        string  `json:"time"`
+	Id            int     `json:"id"`
+	Market        string  `json:"market"`
+	Type          string  `json:"type"`
+	Price         float64 `json:"price"`
+	Size          float64 `json:"size"`
+	Side          string  `json:"side"`
+	Status        string  `json:"status"`
+	FilledSize    float64 `json:"filledSize"`
+	RemainingSize float64 `json:"remainingSize"`
+	Liquidation   bool    `json:"liquidation"`
+	AvgFillPrice  float64 `json:"avgFillPrice"`
+	Time          string  `json:"time"`
+	CreatedAt     string  `json:"createdAt"`
 }
 
 func SocketInit() error {
