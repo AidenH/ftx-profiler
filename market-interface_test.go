@@ -61,17 +61,18 @@ func TestOrdersSocket(t *testing.T) {
 	socket := gowebsocket.New(SocketEndpoint)
 	var resp string
 	var ord OrdersResponse
+	var err error
 
 	socket.OnConnected = func(socket gowebsocket.Socket) {
 		log.Println("connected!")
 		pingRequest(socket)
 
-		if err := AuthStreamLogin(socket); err != nil {
+		if err = AuthStreamLogin(socket); err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
 
-		if err := subscribeRequest(socket, "orders"); err != nil {
+		if err = subscribeRequest(socket, "orders"); err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
@@ -83,11 +84,13 @@ func TestOrdersSocket(t *testing.T) {
 	}
 
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-		if err := json.Unmarshal([]byte(msg), &ord); err != nil {
+		fmt.Println(msg)
+
+		ord, err = handleOrderReplies(ord, msg)
+		if err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
-		fmt.Println(ord)
 	}
 
 	socket.Connect()
