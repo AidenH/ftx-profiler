@@ -28,7 +28,7 @@ type ProgramState struct {
 var VData = make(map[float64]float64)
 var Ladder = make(map[float64]int)
 
-var OpenOrders = Orders{}
+var OpenOrders = OrdersRestReply{}
 var Settings = ProgramSettings{}
 var State = ProgramState{}
 var Account = AccountState{}
@@ -96,7 +96,12 @@ func main() {
 	}
 	defer LogFile.Close()
 
-	InitCui()
+	_, err = InitCui()
+	if err != nil {
+		FileWrite("cui main loop error")
+		FileWrite(err.Error())
+		panic(err)
+	}
 
 	LogFile.Sync()
 

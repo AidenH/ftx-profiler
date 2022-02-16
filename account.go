@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-type Order = map[string]interface{}
+//type Order = map[string]interface{}
 
-type Orders struct {
+type OrdersRestReply struct {
 	Success bool
 	Result  []struct {
 		Id            int
@@ -17,6 +17,16 @@ type Orders struct {
 		Size          float64
 		RemainingSize float64
 	}
+}
+
+type Order struct {
+	Id            int
+	Type          string
+	Price         float64
+	Size          float64
+	Side          string
+	FilledSize    float64
+	RemainingSize float64
 }
 
 type AccountState struct {
@@ -45,11 +55,8 @@ type AccountState struct {
 	}
 
 	// open orders
-	Orders []struct {
-		Price float64
-		Size  float64
-		Side  string
-	}
+	//Orders []Order
+	Orders map[int]Order
 }
 
 // GetAccountInfo() retrieves user's FTX account info via http API request.
@@ -84,7 +91,7 @@ func (a *AccountState) GetAccountInfo() error {
 }
 
 // GetOpenOrders() returns a user's open resting orders
-func (o *Orders) GetOpenOrders() error {
+func (o *OrdersRestReply) GetOpenOrders() error {
 	url := fmt.Sprintf("https://ftx.com/api/orders?market=%s", "GALA-PERP")
 
 	req, err := http.NewRequest("GET", url, nil)

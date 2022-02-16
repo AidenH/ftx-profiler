@@ -61,7 +61,6 @@ func InitCui() (*gocui.Gui, error) {
 	initProfile("ETH-PERP", 0, 0, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
-		FileWrite(fmt.Sprintf("%s", err.Error()))
 		return nil, err
 	}
 

@@ -107,6 +107,7 @@ func SocketInit() error {
 			}
 		} else {
 			sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
+			FileWrite(fmt.Sprintln("unknown event type:\n", msg))
 		}
 	}
 
@@ -129,8 +130,18 @@ func handleOrderReplies(o OrdersResponse, msg string) (OrdersResponse, error) {
 
 	if o.Data.Status == "new" {
 		// handle new orders
+		Account.Orders[o.Data.Id] = Order{
+			Id:            o.Data.Id,
+			Type:          o.Data.Type,
+			Price:         o.Data.Price,
+			Size:          o.Data.Size,
+			Side:          o.Data.Side,
+			FilledSize:    o.Data.FilledSize,
+			RemainingSize: o.Data.RemainingSize,
+		}
 	} else if o.Data.Status == "closed" {
 		// handle closed orders
+		delete(Account.Orders, o.Data.Id)
 	}
 
 	return o, nil
