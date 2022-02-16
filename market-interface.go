@@ -172,7 +172,6 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 			// add event data to VData var
 			AddVData(p, v.Size)
-			//FileWrite(fmt.Sprintf("VData: %f - %f", p, v.Size))
 
 			// if side buy, print green
 			if v.Side == "buy" {
@@ -238,7 +237,6 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 
 		// add event data to VData var
 		AddVData(p, t.Data[0].Size)
-		//FileWrite(fmt.Sprintf("VData: %f - %f", p, t.Data[0].Size))
 
 		// set session Open price if last price was init 0
 		if State.LastPrice == 0 {
@@ -320,8 +318,6 @@ func subscribeRequest(s gowebsocket.Socket, typ string) error {
 	if err != nil {
 		return err
 	}
-
-	//fmt.Println(string(dat))
 
 	s.SendBinary(dat)
 

@@ -131,15 +131,6 @@ func VolRead() error {
 
 func AddVData(price float64, size float64) error {
 
-	/*out, err := Round(size, int(State.SizeGranularity))
-	if err != nil {
-		return err
-	}
-
-	GuiDebugPrint("tape", fmt.Sprint(price, " ", size))
-
-	VData[float64(price)] += out*/
-
 	VData[price] += size
 
 	return nil
@@ -180,8 +171,6 @@ func ParseHttpResp(resp *http.Response, out interface{}) error {
 		fmt.Println("resp.Body output: ", resp.Body)
 		return err
 	}
-
-	//fmt.Println(string(rbody))
 
 	// apply json data to relevant Account struct fields
 	if err := json.Unmarshal(rbody, &out); err != nil {

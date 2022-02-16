@@ -252,16 +252,13 @@ func PrintTape(side string, price float64, size string) error {
 				str := fmt.Sprintf("%s %s - %s %s", Color.Green, p, size, Color.Default)
 				fmt.Fprintln(v, str)
 
-				//FileWrite(str)
 			} else if side == "sell" {
 				str := fmt.Sprintf("%s %s - %s %s", Color.Red, p, size, Color.Default)
 				fmt.Fprintln(v, str)
 
-				//FileWrite(str)
 			} else {
 				err = errors.New("PrintTape - invalid side type")
 
-				//FileWrite(side)
 				return err
 			}
 
