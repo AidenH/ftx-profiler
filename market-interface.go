@@ -57,8 +57,8 @@ type ReplyData struct {
 func SocketInit() error {
 
 	socket := gowebsocket.New(SocketEndpoint)
-	//var t TradesResponse
-	//var o OrdersResponse
+	var t TradesResponse
+	var o OrdersResponse
 
 	var sockErr error
 
@@ -81,7 +81,7 @@ func SocketInit() error {
 	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 
 		if strings.Contains(msg, "orders") {
-			sockErr = handleOrderReplies(msg)
+			_, sockErr = handleOrderReplies(o, msg)
 			if sockErr != nil {
 				FileWrite(sockErr.Error())
 			}
@@ -91,7 +91,7 @@ func SocketInit() error {
 				CState.LockWrite = true
 
 				go func() {
-					sockErr = handleTradeReplies(msg)
+					sockErr = handleTradeReplies(t, msg)
 					if sockErr != nil {
 						FileWrite(sockErr.Error())
 					}
@@ -120,20 +120,21 @@ func SocketInit() error {
 
 }
 
-func handleOrderReplies(msg string) error {
-	var o OrdersResponse
-
-	GuiDebugPrint("tape", msg)
-
+func handleOrderReplies(o OrdersResponse, msg string) (OrdersResponse, error) {
 	if err := json.Unmarshal([]byte(msg), &o); err != nil {
-		return err
+		return OrdersResponse{}, err
 	}
 
-	return nil
+	if o.Data.Status == "new" {
+		fmt.Printf("new:\n%v\n", o)
+	} else if o.Data.Status == "closed" {
+		fmt.Printf("closed:\n%v\n", o)
+	}
+
+	return o, nil
 }
 
-func handleTradeReplies(msg string) error {
-	var t TradesResponse
+func handleTradeReplies(t TradesResponse, msg string) error {
 
 	// if SetMiddle is armed and last price is not init-0, add new last price
 	//  middle-of-profile price
