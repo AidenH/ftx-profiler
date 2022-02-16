@@ -68,6 +68,8 @@ func SocketInit() error {
 		// send json ping to server
 		pingRequest(socket)
 
+		AuthStreamLogin(socket)
+
 		// attempt sub to trades, fills, orders
 		subscribeRequest(socket, "trades")
 		subscribeRequest(socket, "fills")
@@ -126,9 +128,9 @@ func handleOrderReplies(o OrdersResponse, msg string) (OrdersResponse, error) {
 	}
 
 	if o.Data.Status == "new" {
-		fmt.Printf("new:\n%v\n", o)
+		// handle new orders
 	} else if o.Data.Status == "closed" {
-		fmt.Printf("closed:\n%v\n", o)
+		// handle closed orders
 	}
 
 	return o, nil

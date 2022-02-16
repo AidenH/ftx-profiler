@@ -89,7 +89,7 @@ func main() {
 		}
 	}
 
-	LogFile, err = os.Create(fmt.Sprintf("%s/.dwm/profiler-output-log", HomeDir))
+	LogFile, err = os.Create(fmt.Sprintf("%s/.ftx-profiler/profiler-output-log", HomeDir))
 	if err != nil {
 		log.Println("unable to create log file")
 		panic(err)
