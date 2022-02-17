@@ -106,8 +106,8 @@ func SocketInit() error {
 				}()
 			}
 		} else if strings.Contains(msg, "fills") {
-			FileWrite(fmt.Sprintln("fill:\n", msg))
-		} else {
+			//FileWrite(fmt.Sprintln("fill:\n", msg))
+		} else if !strings.Contains(msg, "pong") {
 			sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
 			FileWrite(fmt.Sprintln("unknown event type:\n", msg))
 		}
