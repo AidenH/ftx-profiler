@@ -173,41 +173,43 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		cumulPrice := 0.0
 
 		for _, v := range t.Data {
-
-			p, err := Round(v.Price, State.PricePrecision)
-			if err != nil {
-				return err
-			}
-
-			c := fmt.Sprintf("%.1f", v.Size)
-
-			// add event data to VData var
-			AddVData(p, v.Size)
-
-			// if side buy, print green
-			if v.Side == "buy" {
-				if !State.Aggregate {
-					PrintTape("buy", p, c)
-
-				} else {
-					cumulSize += v.Size
-					cumulSide = "buy"
-					cumulPrice = v.Price
+			// if size is above user-configured minimum volume filter
+			if v.Size > State.VolMinFilter {
+				p, err := Round(v.Price, State.PricePrecision)
+				if err != nil {
+					return err
 				}
 
-			} else if v.Side == "sell" {
-				// if side sell, print red
-				if !State.Aggregate {
-					PrintTape("sell", p, c)
+				c := fmt.Sprintf("%.1f", v.Size)
 
+				// add event data to VData var
+				AddVData(p, v.Size)
+
+				// if side buy, print green
+				if v.Side == "buy" {
+					if !State.Aggregate {
+						PrintTape("buy", p, c)
+
+					} else {
+						cumulSize += v.Size
+						cumulSide = "buy"
+						cumulPrice = v.Price
+					}
+
+				} else if v.Side == "sell" {
+					// if side sell, print red
+					if !State.Aggregate {
+						PrintTape("sell", p, c)
+
+					} else {
+						cumulSize += v.Size
+						cumulSide = "sell"
+						cumulPrice = v.Price
+					}
 				} else {
-					cumulSize += v.Size
-					cumulSide = "sell"
-					cumulPrice = v.Price
+					err := errors.New("handleTradeReplies - invalid side type")
+					return err
 				}
-			} else {
-				err := errors.New("handleTradeReplies - invalid side type")
-				return err
 			}
 		}
 
@@ -237,7 +239,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 			State.LastPrice = p
 		}
 
-	} else if len(t.Data) != 0 {
+	} else if len(t.Data) != 0 && t.Data[0].Size > State.VolMinFilter {
 
 		p, err := Round(t.Data[0].Price, State.PricePrecision)
 		if err != nil {

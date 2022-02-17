@@ -23,6 +23,7 @@ type ProgramState struct {
 	TapeTrue     bool
 	ProfileTrue  bool
 	VolumeCounts bool
+	VolMinFilter float64
 }
 
 var VData = make(map[float64]float64)
@@ -57,6 +58,7 @@ func initProfile(
 		Gui:             g,
 		TapeTrue:        true,
 		ProfileTrue:     true,
+		VolMinFilter:    10,
 	}
 
 	Settings = ProgramSettings{
