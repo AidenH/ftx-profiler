@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/jroimartin/gocui"
 )
@@ -78,8 +80,10 @@ func initProfile(
 }
 
 func main() {
+	ts := time.Now().Format(time.Stamp)
 	var err error
 
+	// make .ftx-profiler dir for related files
 	if err = os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), 0700); err != nil {
 		errType := fmt.Sprintf("%T", err)
 
@@ -91,7 +95,11 @@ func main() {
 		}
 	}
 
-	LogFile, err = os.Create(fmt.Sprintf("%s/.ftx-profiler/profiler-output-log", HomeDir))
+	// create session log file
+	LogFile, err = os.Create(fmt.Sprintf("%s/.ftx-profiler/profiler-output-log-%s",
+		HomeDir,
+		strings.Replace(ts, " ", "-", -1)),
+	)
 	if err != nil {
 		log.Println("unable to create log file")
 		panic(err)
