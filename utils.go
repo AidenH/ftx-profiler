@@ -101,9 +101,10 @@ func FileWrite(dat string) error {
 	return nil
 }
 
+// VolWrite saves volume data from VData map to ~/.ftx-profiler/voldata-<date>
 func VolWrite(*gocui.Gui, *gocui.View) error {
 	ts := time.Now().Format(time.Stamp)
-	//homeDir, _ := os.UserHomeDir()
+
 	filename := fmt.Sprintf("%s/.ftx-profiler/voldata-%s",
 		HomeDir,
 		strings.Replace(ts, " ", "-", -1))
