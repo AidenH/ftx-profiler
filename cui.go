@@ -16,6 +16,7 @@ type CuiState struct {
 	SetMiddle      bool
 	LockWrite      bool
 	ProfileUnitDiv int
+	PriceTrim      int
 }
 
 // InitCui initialize gocui cui
@@ -27,6 +28,7 @@ func InitCui() (*gocui.Gui, error) {
 		SetMiddle:      true,
 		LockWrite:      false,
 		ProfileUnitDiv: 1,
+		PriceTrim:      2,
 	}
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
@@ -48,7 +50,7 @@ func InitCui() (*gocui.Gui, error) {
 		panic(err)
 	}
 
-	// clear volume map
+	// reset volume
 	if err := g.SetKeybinding("", gocui.KeyCtrlR, gocui.ModNone, ClearVolume); err != nil {
 		panic(err)
 	}
@@ -58,7 +60,7 @@ func InitCui() (*gocui.Gui, error) {
 		panic(err)
 	}
 
-	initProfile("ETH-PERP", 0, 0, true, g)
+	initProfile("LOOKS-PERP", 0, 3, true, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
@@ -188,7 +190,7 @@ func PrintProfile() error {
 				} else {
 					fmt.Fprintf(v, "%s%s%s  -  %s\n",
 						Color.Purple,
-						p,
+						p[CState.PriceTrim:],
 						Color.Default,
 						strings.Repeat(Settings.VolumeSymbol, sizewidth))
 				}
@@ -206,7 +208,7 @@ func PrintProfile() error {
 						VData[f])
 				} else {
 					fmt.Fprintf(v, "%s  -  %s\n",
-						p,
+						p[CState.PriceTrim:],
 						strings.Repeat(Settings.VolumeSymbol, sizewidth))
 				}
 			}
@@ -248,11 +250,19 @@ func PrintTape(side string, price float64, size string) error {
 			p := strconv.FormatFloat(price, 'f', State.PricePrecision, 64)
 
 			if side == "buy" {
-				str := fmt.Sprintf("%s %s - %s %s", Color.Green, p, size, Color.Default)
+				str := fmt.Sprintf("%s %s - %s %s",
+					Color.Green,
+					p[CState.PriceTrim:],
+					size,
+					Color.Default)
 				fmt.Fprintln(v, str)
 
 			} else if side == "sell" {
-				str := fmt.Sprintf("%s %s - %s %s", Color.Red, p, size, Color.Default)
+				str := fmt.Sprintf("%s %s - %s %s",
+					Color.Red,
+					p[CState.PriceTrim:],
+					size,
+					Color.Default)
 				fmt.Fprintln(v, str)
 
 			} else {
