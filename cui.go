@@ -46,7 +46,7 @@ func InitCui() (*gocui.Gui, error) {
 	}
 
 	// recenter profile
-	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, Recenter); err != nil {
+	if err := g.SetKeybinding("", gocui.KeySpace, gocui.ModNone, Recenter); err != nil {
 		panic(err)
 	}
 
