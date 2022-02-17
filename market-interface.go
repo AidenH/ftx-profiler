@@ -105,6 +105,8 @@ func SocketInit() error {
 					CState.LockWrite = false
 				}()
 			}
+		} else if strings.Contains(msg, "fills") {
+			FileWrite(fmt.Sprintln("fill:\n", msg))
 		} else {
 			sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
 			FileWrite(fmt.Sprintln("unknown event type:\n", msg))
