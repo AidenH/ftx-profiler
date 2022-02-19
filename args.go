@@ -1,15 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
 
-func HandleOsArgs() {
+func HandleOsArgs() error {
 
 	args := os.Args
 
-	for _, item := range args {
+	for i, item := range args {
 
 		if item == "-t" || item == "--tape-only" {
 			State.ProfileTrue = false
@@ -23,6 +24,17 @@ func HandleOsArgs() {
 			State.VolumeCounts = true
 			log.Println("starting with profile volume counts enabled")
 
+		} else if item == "-l" || item == "--load-session" {
+			filename := args[i+1]
+
+			if err := VolRead(filename); err != nil {
+				return err
+			}
+
+			FileWrite(fmt.Sprint("filename: ", filename))
+
 		}
 	}
+
+	return nil
 }

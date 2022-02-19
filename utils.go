@@ -129,7 +129,22 @@ func VolWrite(*gocui.Gui, *gocui.View) error {
 	return nil
 }
 
-func VolRead() error {
+func VolRead(f string) error {
+	filename, err := os.Open(f)
+	if err != nil {
+		return err
+	}
+
+	defer filename.Close()
+
+	d := gob.NewDecoder(filename)
+
+	if err := d.Decode(&VData); err != nil {
+		return err
+	}
+
+	FileWrite(fmt.Sprint("VData:\n", VData))
+
 	return nil
 }
 
