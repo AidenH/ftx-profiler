@@ -105,11 +105,14 @@ func FileWrite(dat string) error {
 func VolWrite(*gocui.Gui, *gocui.View) error {
 	ts := time.Now().Format(time.Stamp)
 
-	filename := fmt.Sprintf("%s/.ftx-profiler/voldata-%s",
+	// declare file name
+	filename := fmt.Sprintf("%s/.ftx-profiler/%s-voldata-%s",
 		HomeDir,
+		State.Market,
 		strings.Replace(ts, " ", "-", -1))
 	var err error
 
+	// file var
 	VolFile, err = os.Create(filename)
 	if err != nil {
 		panic(err)
