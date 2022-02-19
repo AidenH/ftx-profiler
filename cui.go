@@ -55,7 +55,7 @@ func InitCui() (*gocui.Gui, error) {
 		panic(err)
 	}
 
-	// save volume data to file
+	// save volume data to file. utils.go: VolWrite
 	if err := g.SetKeybinding("", gocui.KeyCtrlS, gocui.ModNone, VolWrite); err != nil {
 		panic(err)
 	}
