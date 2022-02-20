@@ -130,7 +130,14 @@ func VolWrite(*gocui.Gui, *gocui.View) error {
 	return nil
 }
 
+// VolRead reads volume data from arg-supplied volume file
 func VolRead(f string) error {
+	if !strings.Contains(f, State.Market) {
+		err := errors.New("volume file does not match current market")
+		FileWrite(fmt.Sprint(err))
+		return err
+	}
+
 	filename, err := os.Open(f)
 	if err != nil {
 		return err
