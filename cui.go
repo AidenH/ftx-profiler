@@ -177,20 +177,28 @@ func PrintProfile() error {
 
 			// print profile. if i = current price, mark on ladder
 			if f == State.LastPrice {
+				// with volume tally
 				if VData[f] > 0 && State.VolumeCounts {
-					fmt.Fprintf(v, "%s%s%s  -  %s %g\n",
+					fmt.Fprintf(v, "%s%s%s  -  %s %g%s%s%s\n",
 						Color.Purple,
 						p,
 						Color.Default,
 						strings.Repeat(Config.VolumeSymbol, sizewidth),
-						VData[f])
+						VData[f],
+						Color.Purple,
+						Config.PriceMarker,
+						Color.Default)
 
+					// without volume tally
 				} else {
-					fmt.Fprintf(v, "%s%s%s  -  %s\n",
+					fmt.Fprintf(v, "%s%s%s  -  %s%s%s%s\n",
 						Color.Purple,
 						p[Config.PriceTrim:],
 						Color.Default,
-						strings.Repeat(Config.VolumeSymbol, sizewidth))
+						strings.Repeat(Config.VolumeSymbol, sizewidth),
+						Color.Purple,
+						Config.PriceMarker,
+						Color.Default)
 				}
 
 				// if price reaches extremes of visible profile, reset middle coord
@@ -199,11 +207,14 @@ func PrintProfile() error {
 				}
 
 			} else {
+				// with volume tally
 				if VData[f] > 0 && State.VolumeCounts {
 					fmt.Fprintf(v, "%s  -  %s %g\n",
 						p,
 						strings.Repeat(Config.VolumeSymbol, sizewidth),
 						VData[f])
+
+					// without volume tally
 				} else {
 					fmt.Fprintf(v, "%s  -  %s\n",
 						p[Config.PriceTrim:],
