@@ -32,7 +32,6 @@ var VData = make(map[float64]float64)
 var Ladder = make(map[float64]int)
 
 var OpenOrders = OrdersRestReply{}
-var Settings = ProgramSettings{}
 var State = ProgramState{}
 var Account = AccountState{}
 var CState = CuiState{}
@@ -45,28 +44,17 @@ var VolFile *os.File
 
 // initProfile initializes an FTX websocket to populate tape and profile
 // views
-func initProfile(
-	mar string,
-	gran float64,
-	price int,
-	agg bool,
-	g *gocui.Gui) error {
+func initProfile(g *gocui.Gui) error {
 
 	State = ProgramState{
-		Market:          mar,
-		SizeGranularity: gran,
-		PricePrecision:  price,
-		Aggregate:       agg,
+		Market:          Config.Market,
+		SizeGranularity: Config.SizeGranularity,
+		PricePrecision:  Config.PricePrecision,
+		Aggregate:       Config.Aggregate,
 		Gui:             g,
 		TapeTrue:        true,
 		ProfileTrue:     true,
 		VolMinFilter:    10,
-	}
-
-	Settings = ProgramSettings{
-		// i recommend '#' or '█'
-		VolumeSymbol: "█",
-		PriceMarker:  "<",
 	}
 
 	HandleOsArgs()

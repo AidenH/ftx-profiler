@@ -16,7 +16,6 @@ type CuiState struct {
 	SetMiddle      bool
 	LockWrite      bool
 	ProfileUnitDiv int
-	PriceTrim      int
 }
 
 // InitCui initialize gocui cui
@@ -28,7 +27,6 @@ func InitCui() (*gocui.Gui, error) {
 		SetMiddle:      true,
 		LockWrite:      false,
 		ProfileUnitDiv: 1,
-		PriceTrim:      2,
 	}
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
@@ -60,7 +58,7 @@ func InitCui() (*gocui.Gui, error) {
 		panic(err)
 	}
 
-	initProfile("LOOKS-PERP", 0, 3, true, g)
+	initProfile(g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return nil, err
@@ -184,15 +182,15 @@ func PrintProfile() error {
 						Color.Purple,
 						p,
 						Color.Default,
-						strings.Repeat(Settings.VolumeSymbol, sizewidth),
+						strings.Repeat(Config.VolumeSymbol, sizewidth),
 						VData[f])
 
 				} else {
 					fmt.Fprintf(v, "%s%s%s  -  %s\n",
 						Color.Purple,
-						p[CState.PriceTrim:],
+						p[Config.PriceTrim:],
 						Color.Default,
-						strings.Repeat(Settings.VolumeSymbol, sizewidth))
+						strings.Repeat(Config.VolumeSymbol, sizewidth))
 				}
 
 				// if price reaches extremes of visible profile, reset middle coord
@@ -204,12 +202,12 @@ func PrintProfile() error {
 				if VData[f] > 0 && State.VolumeCounts {
 					fmt.Fprintf(v, "%s  -  %s %g\n",
 						p,
-						strings.Repeat(Settings.VolumeSymbol, sizewidth),
+						strings.Repeat(Config.VolumeSymbol, sizewidth),
 						VData[f])
 				} else {
 					fmt.Fprintf(v, "%s  -  %s\n",
-						p[CState.PriceTrim:],
-						strings.Repeat(Settings.VolumeSymbol, sizewidth))
+						p[Config.PriceTrim:],
+						strings.Repeat(Config.VolumeSymbol, sizewidth))
 				}
 			}
 		}
@@ -252,7 +250,7 @@ func PrintTape(side string, price float64, size string) error {
 			if side == "buy" {
 				str := fmt.Sprintf("%s %s - %s %s",
 					Color.Green,
-					p[CState.PriceTrim:],
+					p[Config.PriceTrim:],
 					size,
 					Color.Default)
 				fmt.Fprintln(v, str)
@@ -260,7 +258,7 @@ func PrintTape(side string, price float64, size string) error {
 			} else if side == "sell" {
 				str := fmt.Sprintf("%s %s - %s %s",
 					Color.Red,
-					p[CState.PriceTrim:],
+					p[Config.PriceTrim:],
 					size,
 					Color.Default)
 				fmt.Fprintln(v, str)

@@ -20,9 +20,14 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-type ProgramSettings struct {
-	VolumeSymbol string
-	PriceMarker  string
+type UserConfig struct {
+	Market          string
+	SizeGranularity float64
+	PricePrecision  int
+	Aggregate       bool
+	PriceTrim       int
+	VolumeSymbol    string
+	PriceMarker     string
 }
 
 var Color = struct {
@@ -261,7 +266,7 @@ func MakeDirs() {
 
 		// does ~/.ftx-profiler/ already exist?
 		if errType == "*fs.PathError" {
-			log.Println("~/.ftx-profiler/ already present")
+			log.Println("~/.ftx-profiler/vol/ already present")
 		} else {
 			panic(err)
 		}
