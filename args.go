@@ -31,7 +31,7 @@ func HandleOsArgs() error {
 				return err
 			}
 
-			FileWrite(fmt.Sprint("filename: ", filename))
+			FileWrite(fmt.Sprint("volume data saved to: ", filename))
 
 		}
 	}

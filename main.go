@@ -83,17 +83,8 @@ func main() {
 	ts := time.Now().Format(time.Stamp)
 	var err error
 
-	// make .ftx-profiler dir for related files
-	if err = os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), 0700); err != nil {
-		errType := fmt.Sprintf("%T", err)
-
-		// does ~/.ftx-profiler/ already exist?
-		if errType == "*fs.PathError" {
-			log.Println("~/.ftx-profiler/ already present")
-		} else {
-			panic(err)
-		}
-	}
+	// check application dirs
+	MakeDirs()
 
 	// create session log file
 	LogFile, err = os.Create(fmt.Sprintf("%s/.ftx-profiler/profiler-output-log-%s",

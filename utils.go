@@ -6,6 +6,7 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -233,4 +234,30 @@ func RetrieveAccountInfo() {
 
 		time.Sleep(5 * time.Second)
 	}
+}
+
+// MakeDirs checks for and makes application directories if necessary
+func MakeDirs() {
+	if err := os.Mkdir(fmt.Sprintf("%s/.ftx-profiler", HomeDir), 0700); err != nil {
+		errType := fmt.Sprintf("%T", err)
+
+		// does ~/.ftx-profiler/ already exist?
+		if errType == "*fs.PathError" {
+			log.Println("~/.ftx-profiler/ already present")
+		} else {
+			panic(err)
+		}
+	}
+
+	if err := os.Mkdir(fmt.Sprintf("%s/.ftx-profiler/vol", HomeDir), 0700); err != nil {
+		errType := fmt.Sprintf("%T", err)
+
+		// does ~/.ftx-profiler/ already exist?
+		if errType == "*fs.PathError" {
+			log.Println("~/.ftx-profiler/ already present")
+		} else {
+			panic(err)
+		}
+	}
+
 }
