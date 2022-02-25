@@ -147,9 +147,16 @@ func handleOrderReplies(o OrdersResponse, msg string) (OrdersResponse, error) {
 			FilledSize:    o.Data.FilledSize,
 			RemainingSize: o.Data.RemainingSize,
 		}
+
+		FileWrite(fmt.Sprintln(Account.Orders))
+
 	} else if o.Data.Status == "closed" {
 		// handle closed orders
 		delete(Account.Orders, o.Data.Id)
+	}
+
+	if err := PrintOrders(); err != nil {
+		return OrdersResponse{}, err
 	}
 
 	return o, nil

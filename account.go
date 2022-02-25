@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-//type Order = map[string]interface{}
-
 type OrdersRestReply struct {
 	Success bool
 	Result  []struct {
@@ -55,7 +53,6 @@ type AccountState struct {
 	}
 
 	// open orders
-	//Orders []Order
 	Orders map[int]Order
 }
 

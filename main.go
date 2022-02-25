@@ -33,7 +33,9 @@ var Ladder = make(map[float64]int)
 
 var OpenOrders = OrdersRestReply{}
 var State = ProgramState{}
-var Account = AccountState{}
+var Account = AccountState{
+	Orders: make(map[int]Order), // init orders map
+}
 var CState = CuiState{}
 
 var client = &http.Client{}

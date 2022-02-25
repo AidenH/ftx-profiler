@@ -16,6 +16,7 @@ type CuiState struct {
 	SetMiddle      bool
 	LockWrite      bool
 	ProfileUnitDiv int
+	LadderStart    float64
 }
 
 // InitCui initialize gocui cui
@@ -105,6 +106,8 @@ func Recenter(g *gocui.Gui, v *gocui.View) error {
 
 	GuiDebugPrint("status", "\nResetting profile...")
 
+	PrintProfile()
+
 	return nil
 }
 
@@ -120,6 +123,8 @@ func ClearVolume(g *gocui.Gui, v *gocui.View) error {
 		err := errors.New("VData not cleared")
 		return err
 	}
+
+	PrintProfile()
 
 	return nil
 }
@@ -144,6 +149,7 @@ func PrintProfile() error {
 		// shift price a relative amount of precision decimal points, then subtract
 		// half of viewport rows, then shift back to proper price size
 		ladderStart := (modPrice - float64(maxY/2)) / prec
+		CState.LadderStart = ladderStart
 
 		v.Clear()
 
@@ -219,7 +225,11 @@ func PrintOrders() error {
 			return err
 		}
 
-		fmt.Fprintln(v, OpenOrders.Result)
+		_, maxY := v.Size()
+
+		for i := maxY; i > 0; i-- {
+
+		}
 
 		return nil
 	})
