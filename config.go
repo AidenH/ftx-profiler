@@ -3,7 +3,7 @@ package main
 // user configs here
 var Config = UserConfig{
 	// Program settings
-	Market:          "LOOKS-PERP",
+	Market:          "FTM-PERP",
 	SizeGranularity: 0,
 	PricePrecision:  3,
 	Aggregate:       true, // compile multi-transactions into singles

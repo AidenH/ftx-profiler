@@ -179,7 +179,7 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 	// if more than one Data element, iterate through items
 	// else, just display one Data item
 	// color code based on transaction's market side
-	if len(t.Data) > 1 {
+	if len(t.Data) > 1 && t.Data[0].Size > State.VolMinFilter {
 
 		// init variables for counting single cumulative trades across
 		// 	multiple price levels
