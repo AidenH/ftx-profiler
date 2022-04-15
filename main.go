@@ -73,9 +73,11 @@ func initProfile(g *gocui.Gui) error {
 	// init continuous account info checks
 	go RetrieveAccountInfo()
 
-	err := SocketInit()
+	if err := SocketInit(); err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 func main() {
