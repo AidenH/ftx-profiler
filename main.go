@@ -34,7 +34,7 @@ type ProgramState struct {
 type Connection struct {
 	Name      string
 	Socket    gowebsocket.Socket
-	Subscribe func(Connection)
+	Subscribe func(Connection) error
 }
 
 var VData = make(map[float64]float64)

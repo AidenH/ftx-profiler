@@ -7,17 +7,17 @@ import (
 	"github.com/sacOO7/gowebsocket"
 )
 
-const FTXSocketEndpoint = "wss://ftx.com/ws/"
+const FTXSocketBase = "wss://ftx.com/ws/"
 
 func NewFTXConnection() Connection {
 	return Connection{
 		Name:      "ftx",
-		Socket:    gowebsocket.New(FTXSocketEndpoint),
+		Socket:    gowebsocket.New(FTXSocketBase),
 		Subscribe: FTXSubscribe,
 	}
 }
 
-func FTXSubscribe(c Connection) {
+func FTXSubscribe(c Connection) error {
 	log.Println("Connected!")
 
 	// send json ping to server
@@ -29,6 +29,8 @@ func FTXSubscribe(c Connection) {
 	FTXSubscribeRequest(c.Socket, "trades")
 	FTXSubscribeRequest(c.Socket, "fills")
 	FTXSubscribeRequest(c.Socket, "orders")
+
+	return nil
 }
 
 func FTXPingRequest(s gowebsocket.Socket) error {
