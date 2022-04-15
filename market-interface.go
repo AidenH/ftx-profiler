@@ -11,10 +11,13 @@ import (
 )
 
 type Request struct {
-	Args    Args   `json:"args"`
-	Op      string `json:"op"`
-	Channel string `json:"channel"`
-	Market  string `json:"market"`
+	Args    Args     `json:"args"`
+	Params  []string `json:"params"`
+	Method  string   `json:"method"`
+	Op      string   `json:"op"`
+	Channel string   `json:"channel"`
+	Market  string   `json:"market"`
+	Id      int      `json:"id"`
 }
 
 type Args struct {
@@ -121,6 +124,7 @@ func SocketInit() error {
 }
 
 func handleOrderReplies(o OrdersResponse, msg string) (OrdersResponse, error) {
+	// filter json data into OrdersResponse type
 	if err := json.Unmarshal([]byte(msg), &o); err != nil {
 		return OrdersResponse{}, err
 	}
