@@ -60,25 +60,15 @@ func SocketInit() error {
 	var sockErr error
 
 	for _, i := range State.Connections {
-		i.OnConnected = func(socket gowebsocket.Socket) {
-			log.Println("Connected!")
-
-			// send json ping to server
-			pingRequest(socket)
-
-			AuthStreamLogin(socket)
-
-			// attempt sub to trades, fills, orders
-			subscribeRequest(socket, "trades")
-			subscribeRequest(socket, "fills")
-			subscribeRequest(socket, "orders")
+		i.Socket.OnConnected = func(socket gowebsocket.Socket) {
+			i.Subscribe(i)
 		}
 
-		i.OnConnectError = func(err error, socket gowebsocket.Socket) {
+		i.Socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
 			sockErr = err
 		}
 
-		i.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+		i.Socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 
 			if strings.Contains(msg, "orders") {
 				_, sockErr = handleOrderReplies(o, msg)
@@ -117,13 +107,13 @@ func SocketInit() error {
 			}
 		}
 
-		i.OnDisconnected = func(err error, socket gowebsocket.Socket) {
+		i.Socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
 			log.Println("Disconnected")
 			sockErr = err
 			return
 		}
 
-		i.Connect()
+		i.Socket.Connect()
 	}
 
 	return sockErr
@@ -285,83 +275,6 @@ func handleTradeReplies(t TradesResponse, msg string) error {
 		}
 
 	}
-
-	return nil
-
-}
-
-func pingRequest(s gowebsocket.Socket) error {
-
-	dat, err := json.Marshal(Request{
-		Op: "ping",
-	})
-	if err != nil {
-		return err
-	}
-
-	s.SendBinary(dat)
-
-	return nil
-}
-
-func AuthStreamLogin(s gowebsocket.Socket) error {
-	signature, ts, err := CreateSocketSignature()
-	if err != nil {
-		return err
-	}
-
-	// args for authorization
-	Auth := Args{
-		Key:  Api,
-		Sign: signature,
-		Time: ts,
-	}
-
-	// rest of packet including args
-	dat, err := json.Marshal(Request{
-		Args: Auth,
-		Op:   "login",
-	})
-	if err != nil {
-		return err
-	}
-
-	s.SendBinary(dat)
-
-	return nil
-}
-
-// subscribeRequest connects websocket client to provided FTX stream
-func subscribeRequest(s gowebsocket.Socket, typ string) error {
-	var Auth Args
-
-	// trades subscribe packet
-	dat, err := json.Marshal(Request{
-		Args:    Auth,
-		Op:      "subscribe",
-		Channel: typ,
-		Market:  State.Market,
-	})
-	if err != nil {
-		return err
-	}
-
-	s.SendBinary(dat)
-
-	return nil
-}
-
-func unsubscribeRequest(s gowebsocket.Socket, ch string) error {
-	dat, err := json.Marshal(Request{
-		Op:      "unsubscribe",
-		Channel: ch,
-		Market:  State.Market,
-	})
-	if err != nil {
-		return err
-	}
-
-	s.SendBinary(dat)
 
 	return nil
 }

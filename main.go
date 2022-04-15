@@ -13,7 +13,7 @@ import (
 )
 
 type ProgramState struct {
-	Connections map[string]gowebsocket.Socket
+	Connections []Connection
 
 	// market
 	Market          string
@@ -29,6 +29,12 @@ type ProgramState struct {
 	ProfileTrue  bool
 	VolumeCounts bool
 	VolMinFilter float64
+}
+
+type Connection struct {
+	Name      string
+	Socket    gowebsocket.Socket
+	Subscribe func(Connection)
 }
 
 var VData = make(map[float64]float64)
@@ -52,7 +58,6 @@ var VolFile *os.File
 func initProfile(g *gocui.Gui) error {
 
 	State = ProgramState{
-		Connections:     make(map[string]gowebsocket.Socket),
 		Market:          Config.Market,
 		SizeGranularity: Config.SizeGranularity,
 		PricePrecision:  Config.PricePrecision,
