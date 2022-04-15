@@ -1,3 +1,3 @@
 package main
 
-const KuSocketEndpoint = ""
+const KuSocketBase = ""
