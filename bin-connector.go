@@ -27,11 +27,13 @@ func BinSubscribe(c Connection) error {
 	dat, err := json.Marshal(Request{
 		Method: "SUBSCRIBE",
 		Params: []string{fmt.Sprint(market, "@aggTrade")},
+		Id:     1,
 	})
 	if err != nil {
 		return err
 	}
 
+	log.Println("sending sub request")
 	c.Socket.SendBinary(dat)
 
 	return nil

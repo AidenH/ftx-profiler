@@ -92,3 +92,35 @@ func TestFTXOrdersSocket(t *testing.T) {
 	}
 
 }
+
+func TestBinTradesSocket(t *testing.T) {
+	State.Market = "BTC-PERP"
+	State.Connections = append(State.Connections, NewBinConnection())
+
+	c := State.Connections[0]
+	var resp string
+	var tr TradesResponse
+
+	c.Socket.OnConnected = func(socket gowebsocket.Socket) {
+		c.Subscribe(c)
+	}
+
+	c.Socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	c.Socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+		json.Unmarshal([]byte(msg), &tr)
+		fmt.Println(tr)
+	}
+
+	c.Socket.Connect()
+
+	for resp == "" {
+		// pass on successful subscribe
+		if tr.Type == "subscribed" && !tinkering {
+			return
+		}
+	}
+}
