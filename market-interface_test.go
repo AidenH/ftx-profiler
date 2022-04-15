@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"testing"
 
 	"github.com/sacOO7/gowebsocket"
@@ -18,34 +17,29 @@ func TestSocketInit(t *testing.T) {
 	}
 }
 
-func TestTradesSocket(t *testing.T) {
+func TestFTXTradesSocket(t *testing.T) {
 	State.Market = "BTC-PERP"
+	State.Connections = append(State.Connections, NewFTXConnection())
 
-	socket := gowebsocket.New(SocketEndpoint)
+	c := State.Connections[0]
 	var resp string
 	var tr TradesResponse
 
-	socket.OnConnected = func(socket gowebsocket.Socket) {
-		log.Println("connected!")
-		pingRequest(socket)
-
-		if err := subscribeRequest(socket, "trades"); err != nil {
-			fmt.Println(err.Error())
-			t.Fail()
-		}
+	c.Socket.OnConnected = func(socket gowebsocket.Socket) {
+		c.Subscribe(c)
 	}
 
-	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
+	c.Socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+	c.Socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 		json.Unmarshal([]byte(msg), &tr)
 		fmt.Println(tr)
 	}
 
-	socket.Connect()
+	c.Socket.Connect()
 
 	for resp == "" {
 		// pass on successful subscribe
@@ -55,35 +49,30 @@ func TestTradesSocket(t *testing.T) {
 	}
 }
 
-func TestOrdersSocket(t *testing.T) {
+func TestFTXOrdersSocket(t *testing.T) {
 	State.Market = "BTC-PERP"
+	State.Connections = append(State.Connections, NewFTXConnection())
 
-	socket := gowebsocket.New(SocketEndpoint)
+	c := State.Connections[0]
 	var resp string
 	var ord OrdersResponse
 	var err error
 
-	socket.OnConnected = func(socket gowebsocket.Socket) {
-		log.Println("connected!")
-		pingRequest(socket)
-
-		if err = AuthStreamLogin(socket); err != nil {
+	c.Socket.OnConnected = func(socket gowebsocket.Socket) {
+		if err = FTXAuthStreamLogin(socket); err != nil {
 			fmt.Println(err.Error())
 			t.Fail()
 		}
 
-		if err = subscribeRequest(socket, "orders"); err != nil {
-			fmt.Println(err.Error())
-			t.Fail()
-		}
+		c.Subscribe(c)
 	}
 
-	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
+	c.Socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+	c.Socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
 		fmt.Println(msg)
 
 		ord, err = handleOrderReplies(ord, msg)
@@ -93,7 +82,7 @@ func TestOrdersSocket(t *testing.T) {
 		}
 	}
 
-	socket.Connect()
+	c.Socket.Connect()
 
 	for resp == "" {
 		// pass on successful subscribe
