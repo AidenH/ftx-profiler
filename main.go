@@ -9,9 +9,12 @@ import (
 	"time"
 
 	"github.com/jroimartin/gocui"
+	"github.com/sacOO7/gowebsocket"
 )
 
 type ProgramState struct {
+	Connections map[string]gowebsocket.Socket
+
 	// market
 	Market          string
 	LastPrice       float64
@@ -49,6 +52,7 @@ var VolFile *os.File
 func initProfile(g *gocui.Gui) error {
 
 	State = ProgramState{
+		Connections:     make(map[string]gowebsocket.Socket),
 		Market:          Config.Market,
 		SizeGranularity: Config.SizeGranularity,
 		PricePrecision:  Config.PricePrecision,

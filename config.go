@@ -3,9 +3,9 @@ package main
 // user configs here
 var Config = UserConfig{
 	// Program settings
-	Market:          "FTM-PERP",
+	Market:          "GALA-PERP",
 	SizeGranularity: 0,
-	PricePrecision:  3,
+	PricePrecision:  4,
 	Aggregate:       true, // compile multi-transactions into singles
 
 	// TUI

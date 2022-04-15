@@ -10,8 +10,6 @@ import (
 	"github.com/sacOO7/gowebsocket"
 )
 
-const SocketEndpoint = "wss://ftx.com/ws/"
-
 type Request struct {
 	Args    Args   `json:"args"`
 	Op      string `json:"op"`
@@ -56,76 +54,77 @@ type ReplyData struct {
 
 func SocketInit() error {
 
-	socket := gowebsocket.New(SocketEndpoint)
 	var t TradesResponse
 	var o OrdersResponse
 
 	var sockErr error
 
-	socket.OnConnected = func(socket gowebsocket.Socket) {
-		log.Println("Connected!")
+	for _, i := range State.Connections {
+		i.OnConnected = func(socket gowebsocket.Socket) {
+			log.Println("Connected!")
 
-		// send json ping to server
-		pingRequest(socket)
+			// send json ping to server
+			pingRequest(socket)
 
-		AuthStreamLogin(socket)
+			AuthStreamLogin(socket)
 
-		// attempt sub to trades, fills, orders
-		subscribeRequest(socket, "trades")
-		subscribeRequest(socket, "fills")
-		subscribeRequest(socket, "orders")
-	}
-
-	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
-		sockErr = err
-	}
-
-	socket.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
-
-		if strings.Contains(msg, "orders") {
-			_, sockErr = handleOrderReplies(o, msg)
-			if sockErr != nil {
-				FileWrite(sockErr.Error())
-			}
-
-		} else if strings.Contains(msg, "trades") {
-			if !CState.LockWrite {
-				CState.LockWrite = true
-
-				go func() {
-					sockErr = handleTradeReplies(t, msg)
-					if sockErr != nil {
-						FileWrite(sockErr.Error())
-					}
-
-					if State.ProfileTrue {
-						PrintProfile()
-					}
-
-					SetStatus()
-
-					CState.LockWrite = false
-				}()
-
-			}
-
-		} else if strings.Contains(msg, "fills") {
-			//FileWrite(fmt.Sprintln("fill:\n", msg))
-
-		} else if !strings.Contains(msg, "pong") {
-			sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
-			FileWrite(fmt.Sprintln("unknown event type:\n", msg))
-
+			// attempt sub to trades, fills, orders
+			subscribeRequest(socket, "trades")
+			subscribeRequest(socket, "fills")
+			subscribeRequest(socket, "orders")
 		}
-	}
 
-	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
-		log.Println("Disconnected")
-		sockErr = err
-		return
-	}
+		i.OnConnectError = func(err error, socket gowebsocket.Socket) {
+			sockErr = err
+		}
 
-	socket.Connect()
+		i.OnTextMessage = func(msg string, socket gowebsocket.Socket) {
+
+			if strings.Contains(msg, "orders") {
+				_, sockErr = handleOrderReplies(o, msg)
+				if sockErr != nil {
+					FileWrite(sockErr.Error())
+				}
+
+			} else if strings.Contains(msg, "trades") {
+				if !CState.LockWrite {
+					CState.LockWrite = true
+
+					go func() {
+						sockErr = handleTradeReplies(t, msg)
+						if sockErr != nil {
+							FileWrite(sockErr.Error())
+						}
+
+						if State.ProfileTrue {
+							PrintProfile()
+						}
+
+						SetStatus()
+
+						CState.LockWrite = false
+					}()
+
+				}
+
+			} else if strings.Contains(msg, "fills") {
+				//FileWrite(fmt.Sprintln("fill:\n", msg))
+
+			} else if !strings.Contains(msg, "pong") {
+				sockErr = errors.New(fmt.Sprintf("unknown event type:\n %s\n", msg))
+				FileWrite(fmt.Sprintln("unknown event type:\n", msg))
+
+			}
+		}
+
+		i.OnDisconnected = func(err error, socket gowebsocket.Socket) {
+			log.Println("Disconnected")
+			sockErr = err
+			return
+		}
+
+		i.Connect()
+	}
 
 	return sockErr
 

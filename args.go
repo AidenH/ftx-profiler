@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/sacOO7/gowebsocket"
 )
 
 func HandleOsArgs() error {
@@ -33,6 +35,10 @@ func HandleOsArgs() error {
 
 			FileWrite(fmt.Sprint("volume data saved to: ", filename))
 
+		} else if item == "binance" {
+			State.Connections["binance"] = gowebsocket.New(BinSocketEndpoint)
+		} else if item == "ftx" {
+			State.Connections["ftx"] = gowebsocket.New(FTXSocketEndpoint)
 		}
 	}
 
